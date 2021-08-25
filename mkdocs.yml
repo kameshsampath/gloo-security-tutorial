@@ -1,0 +1,57 @@
+site_name: 'Gloo Edge Security Tutorial'
+site_url: https://kameshsampath.github.io/gloo-edge-security-tutorial/
+theme:
+  name: material
+  features:
+    - content.code.annotate
+    - content.tabs.link
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - yml
+    - shell
+    - bash
+    - javascript
+nav:
+  - 'Overview': "index.md"
+  - 'Tools and Sources': "tools-and-sources.md"
+  - "Private ACME CA": "acme-ca.md"
+  - 'Setup': "setup.md"
+  - "Deploy Microservice": "deploy-app.md"
+  - "Security with Gloo Edge":
+      - "Create Gloo Resources": "gloo-resources.md"
+      - "Encrypt Traffic": "encrypt.md"
+      - "Authentication": "auth.md"
+      - "Rate Limit": "rate-limit.md"
+      - "Web Application Firewall": "waf.md"
+      - "CORS": "cors.md"
+markdown_extensions:
+  - toc:
+      baselevel: 1
+      permalink: "&para;"
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - smarty
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic:
+      mode: view
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.mark
+  - pymdownx.tabbed
+  - pymdownx.tilde
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+

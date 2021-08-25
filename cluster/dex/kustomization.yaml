@@ -1,0 +1,22 @@
+namespace: dex
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  - name: github-client
+    envs:
+     - github.env.secret
+
+configMapGenerator:
+  - name: dex
+    files:
+      - config.yaml
+resources:
+  - namespace.yaml
+  - sa.yaml
+  - rbac.yaml
+  - issuer.yaml
+  - certificate.yaml
+  - deployment.yaml
+  - service.yaml

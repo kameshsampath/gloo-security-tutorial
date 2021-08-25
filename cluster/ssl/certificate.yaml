@@ -1,0 +1,30 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "${MINIKUBE_IP}.nip.io"
+spec:
+  isCA: true
+  secretName: "${MINIKUBE_IP}.nip.io-tls"
+  duration: 43800h # 5Y
+  renewBefore: 360h # 15d
+  subject:
+    organizations:
+      - example
+    organizationalUnits:
+      - demos
+  privateKey:
+    algorithm: RSA
+    size: 4096
+  issuerRef:
+    kind: Issuer
+    name: selfsigned-issuer
+  dnsNames:
+   - "${MINIKUBE_IP}.nip.io"
+   - "*.example.com"
+   - "localhost"
+   - "127.0.0.1.nip.io"
+  ipAddresses:
+    - "${MINIKUBE_IP}"
+    - "127.0.0.1"
+  usages:
+    - "server auth"

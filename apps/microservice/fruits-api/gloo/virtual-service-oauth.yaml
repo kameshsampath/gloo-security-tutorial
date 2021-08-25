@@ -1,0 +1,41 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: fruits-api
+  namespace: gloo-system
+spec:
+  displayName: FruitsAPI
+  sslConfig:
+    oneWayTls: true
+    secretRef:
+      name: "${MINIKUBE_IP}.nip.io-tls"
+      namespace: my-certs
+  virtualHost:
+    domains:
+      - "*"
+    # oAuth Config
+    options:
+      extauth:
+        configRef:
+          name: oidc-dex
+          namespace: gloo-system
+    routes:
+      # Application Routes
+      # ------------
+      - matchers:
+          - prefix: /api/
+        routeAction:
+          single:
+            upstream:
+              name: fruits-app-fruits-api-8080
+              namespace: gloo-system
+        options:
+          prefixRewrite: /v1/api/
+      - matchers:
+          - prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: fruits-app-fruits-api-8080
+              namespace: gloo-system
+  

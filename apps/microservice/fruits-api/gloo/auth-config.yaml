@@ -1,0 +1,20 @@
+apiVersion: enterprise.gloo.solo.io/v1
+kind: AuthConfig
+metadata:
+  creationTimestamp: null
+  name: oidc-dex
+  namespace: gloo-system
+spec:
+  configs:
+  - oauth:
+      appUrl: https://$MINIKUBE_IP.nip.io:30443
+      callbackPath: /callback
+      clientId: fruits-app
+      clientSecretRef:
+        name: fruits-app-oauth
+        namespace: gloo-system
+      issuerUrl: https://dex-$MINIKUBE_IP.nip.io:32000/
+      scopes:
+      - email
+status: {}
+
