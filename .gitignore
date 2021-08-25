@@ -31,3 +31,4 @@ github.env.secret
 cluster/gloo/extauth-patch.yaml
 cluster/gloo/all.yaml
 certs/**/*
+!bin/
