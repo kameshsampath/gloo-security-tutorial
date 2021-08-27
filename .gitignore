@@ -32,3 +32,7 @@ cluster/gloo/extauth-patch.yaml
 cluster/gloo/all.yaml
 certs/**/*
 !bin/
+**/*.crt
+cluster/step-ca/old
+cluster/step-ca/values.yaml
+!includes/response.json

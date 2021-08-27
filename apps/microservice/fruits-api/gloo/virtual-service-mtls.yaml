@@ -6,7 +6,6 @@ metadata:
 spec:
   displayName: FruitsAPI
   sslConfig:
-    oneWayTls: true
     secretRef:
       name: "${MINIKUBE_IP}.nip.io-tls"
       namespace: gloo-system

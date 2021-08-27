@@ -6,6 +6,11 @@ authors:
 date: 2021-08-19
 ---
 
+At the end of this chapter you would have,
+
+- [x] Installed Gloo Edge Enterprise 
+- [x] Configured Gloo Edge to use our custom CA
+
 ## Ensure Environment
 
 Make sure you have the Gloo Enterprise License Key before proceeding to install. Export the license key to variable,
@@ -39,7 +44,7 @@ kubectl create namespace gloo-system
 Create a secret with our custom CA root certificate,
 
 ```shell
-kubectl create secret generic trusted-ca --from-file=tls.crt=$TUTORIAL_HOME/certs/root_ca.crt -n gloo-system
+envsubst < $TUTORIAL_HOME/cluster/gloo/trusted-ca.yaml | kubectl apply -f -
 ```
 
 Add `helm` repository,
@@ -49,15 +54,15 @@ helm repo add glooe https://storage.googleapis.com/gloo-ee-helm
 helm repo update
 ```
 
-Get the latest Gloo Edge version
+Get the latest Gloo Edge version,
 
 ```shell
 export GLOO_EE_VERSION=$(helm search repo glooe -ojson | jq -r '.[0].version')
 ```
 
-As we need to ensure Gloo uses our custom CA, we need to patch the Gloo' `extauth` deployment and inject our root CA.
+As we need to ensure that Gloo extauth uses our custom CA, we need to patch the Gloo' `extauth` deployment and inject our root CA.
 
-Run the command to create the patch,
+Run the command to create the patch with `$GLOO_EE_VERSION`,
 
 ```shell
 envsubst < $TUTORIAL_HOME/cluster/gloo/extauth-patch-template > $TUTORIAL_HOME/cluster/gloo/extauth-patch.yaml
@@ -78,14 +83,11 @@ helm install gloo glooe/gloo-ee --namespace gloo-system \
 
 !!! note
     - You can safely ignore the helm warnings
+    - It will take few minutes for the Gloo Edge to be installed and ready
 
-It will take few minutes for the gloo to be ready, watch the status of the deployments using:
+## Verify Install
 
-```shell
-$TUTORIAL_HOME/bin/waitForInstall.sh
-```
-
-Once all the gloo components(deployments) comes up, do a sanity check by running,
+Once all the gloo install is complete, do a sanity check by running,
 
 ```shell
 glooctl check

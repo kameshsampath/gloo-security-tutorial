@@ -6,117 +6,131 @@ authors:
 date: 2021-08-19
 ---
 
-# Gloo Edge::Encrypting Traffic
-
 At the end of this chapter you would have known how to:
 
-- [x] Deploy Cert Manager
-- [x] Configure Gloo Proxy to use Certficates
+- [x] Create Certificates for Fruits App
+- [x] Configure Gloo Virtual Service with SSL/TLS
 
-## Download all Cert Manager
+## Certifcate Request
 
-Download and install [cert-manager](https://github.com/jetstack/cert-manager/releases). Ensure that cert-manager is added to the system-path.
+As part of earlier [chapter](./step-certificates.md), we have step our CA and `StepIssuer` that helps us to create `cert-manager` CertificateRequests to generate the certificates.
 
-Verify `cert-manager`:
+As first step of that we need to create a CSR, we can use step cli to create the CSR.
 
-```shell
-kubectl cert-manager version --short
-```
-
-The command should show an output like
+Create a password file to that will be used to encrypt the keys, for the sake of this demo let use use our `$STEP_CA_PASSWORD` as our password to encrypt the keys,
 
 ```shell
-Client Version: v1.5.1
-error: could not detect the cert-manager version: the cert-manager CRDs are not yet installed on the Kubernetes API server
+echo "$STEP_CA_PASSWORD" > $TUTORIAL_HOME/certs/password-file
 ```
 
-## Install Cert Manager
-
-The error shown in the command is OK as we are yet to install the `cert-manager` in the cluster. Let us install by running,
+Let us create the CSR and keys,
 
 ```shell
-kubectl cert-manager x install
+step certificate create gloo-demos --csr \
+  --san "${MINIKUBE_IP}.nip.io" \
+  --san "*-${MINIKUBE_IP}.nip.io" \
+  --san "${MINIKUBE_IP}" \
+  --password-file $TUTORIAL_HOME/certs/password-file \
+  $TUTORIAL_HOME/certs/gloo-demos.csr $TUTORIAL_HOME/certs/gloo-demos.key
 ```
 
-Now running the version command `kubectl cert-manager version --short` again should show an output like:
+If all goes well you should have the `gloo-demos.csr` and `gloo-demos.key` files in the `$TUTORIAL_HOME/certs` folder.
+
+## Create Certificate Request
+
+Having created the CSR we are good to create the  cert-manager's `CertificateRequest`,
+
+As first step let us base64 encode the `gloo-demos` CSR,
 
 ```shell
-Client Version: v1.5.1
-Server Version: v1.5.1
+export GLOO_DEMOS_CSR=$(cat $TUTORIAL_HOME/certs/gloo-demos.csr | openssl base64 | tr -d '\n' )
 ```
 
-## Self Signed Certifcates
-
-Before we start to encrypt the Gloo Gateway traffic, we will generate the certificates that could be used as the SSL certificates.
-
-For this tutorial we will use our own Self-Signed[^1] certificates generated using **cert-manager**.
+Create the `CertificateRequest`,
 
 ```shell
-kustomize build $TUTORIAL_HOME/cluster/ssl | envsubst | kubectl apply -f -
+envsubst< $TUTORIAL_HOME/cluster/ssl/certificate-request.yaml | kubectl apply -f - 
 ```
 
-Check the certifcate secret that is created,
+Check the status of the `CertificateRequest`,
 
 ```shell
-kubectl get secrets -n my-certs "$MINIKUBE_IP.nip.io-tls" -o yaml
+kubectl get certificaterequests.cert-manager.io -n step-certificates-system {MINIKUBE_IP}.nip.io -o json | jq '.status.conditions[]'
 ```
 
-Inspect the details of the secret,
+If all went well you should see an output like,
+
+```json hl_lines="10-13"
+{
+  "lastTransitionTime": "2021-08-26T07:34:30Z",
+  "message": "Certificate request has been approved by cert-manager.io",
+  "reason": "cert-manager.io",
+  "status": "True",
+  "type": "Approved"
+}
+{
+  "lastTransitionTime": "2021-08-26T07:34:30Z",
+  "message": "Certificate issued",
+  "reason": "Issued",
+  "status": "True",
+  "type": "Ready"
+}
+```
+
+Wait for the certificate to be updated in the request, you can check the same via,
+
+CA Certificate can be retrieved by,
 
 ```shell
-kubectl cert-manager inspect secret -n my-certs "$MINIKUBE_IP.nip.io-tls"
+kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${MINIKUBE_IP}.nip.io -o json | jq -r '.status.certificate' | base64 -D >$TUTORIAL_HOME/certs/gloo-demos-ca.crt
 ```
 
-The command should show an output like,
+TLS Certificate can be retrieved by,
 
-```text
-Valid for:
-        DNS Names: 
-                - 192.168.64.9.nip.io
-                - *.example.com
-                - localhost
-                - 127.0.0.1.nip.io
-        URIs: <none>
-        IP Addresses: 
-                - 192.168.64.9
-                - 127.0.0.1
-        Email Addresses: <none>
-        Usages: 
-                - cert sign
-                - server auth
+```shell
+kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${MINIKUBE_IP}.nip.io -o json | jq -r '.status.certificate' | base64 -D > $TUTORIAL_HOME/certs/gloo-demos.crt
+```
 
-Validity period:
-        Not Before: Sat, 21 Aug 2021 14:52:09 UTC
-        Not After: Thu, 20 Aug 2026 14:52:09 UTC
+## Verify Certificates
 
-Issued By:
-        Common Name:    <none>
-        Organization:   <none>
-        OrganizationalUnit:     example
-        Country:        <none>
+Get the root CA bundle,
 
-Issued For:
-        Common Name:    <none>
-        Organization:   <none>
-        OrganizationalUnit:     example
-        Country:        <none>
+```shell
+kubectl get -n step-certificates-system -o jsonpath="{.data['root_ca\.crt']}" configmaps/step-certificates-certs  > $TUTORIAL_HOME/certs/root_ca.crt
+```
 
-Certificate:
-        Signing Algorithm:      SHA256-RSA
-        Public Key Algorithm:   RSA
-        Serial Number:  2401601519814705181152316905762162533
-        Fingerprints:   40:F5:A5:A4:B8:11:E2:6E:88:A9:E3:0B:3D:D0:F3:56:89:59:9B:70:65:DA:73:A3:F5:DD:B0:1B:A4:98:52:EC
-        Is a CA certificate: true
-        CRL:    <none>
-        OCSP:   <none>
+```shell
+if step certificate verify $TUTORIAL_HOME/certs/gloo-demos.crt --roots $TUTORIAL_HOME/certs/root_ca.crt --host=$MINIKUBE_IP.nxp.io ;
+then
+  echo 'Verification succeeded!'
+else
+ echo 'Verification failed!'
+fi
+```
 
-Debugging:
-        Trusted by this computer:       no: x509: certificate signed by unknown authority
-        CRL Status:     No CRL endpoints set
-        OCSP Status:    Cannot check OCSP: No OCSP Server set
+With `Verification succeeded!`, we are now all set to encrypt our gateway traffic.
+
+## Create SSL Secret
+
+To be able to encrypt the traffic via Gloo Gateway, we need to configure the TLS certicates. The TLS certficate is configured using Kubernetes Secret.
+
+Decrypt the private key that we used to create the Certificate Signing Request,
+
+```shell
+step certificate key $TUTORIAL_HOME/certs/gloo-demos.key --out=$TUTORIAL_HOME/certs/gloo-demos-key.pem
+```
+
+Let us create a Kubernetes secret that we will use later to configure the TLS for Gloo Virtual Service,
+
+```shell
+glooctl create secret tls $MINIKUBE_IP.nip.io-tls \
+  --certchain $TUTORIAL_HOME/certs/gloo-demos.crt \
+  --privatekey=$TUTORIAL_HOME/certs/gloo-demos-key.pem 
 ```
 
 ## Encrypt Fruits API Route
+
+### One Way TLS
 
 Let us update the Virtual Service to enable SSL via the `sslConfig` block as shown,
 
@@ -132,10 +146,10 @@ spec:
     oneWayTls: true # (1)
     secretRef:
       name: "${MINIKUBE_IP}.nip.io-tls"
-      namespace: my-certs
+      namespace: gloo-system
   virtualHost:
     domains:
-      - "*"
+      - "${MINIKUBE_IP}.nip.io"
     routes:
       # Application Routes
       # ------------
@@ -159,10 +173,17 @@ envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service-ssl.
   | kubectl apply -f - 
 ```
 
+Get the HTTPS proxy URL,
+
+```shell
+export GLOO_PROXY_URL=$(glooctl proxy url --local-cluster-name="$PROFILE_NAME" \
+  --port=https)
+```
+
 Let us check the service over SSL,
 
 ```shell
-$TUTORIAL_HOME/bin/call.sh https
+http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
 ```
 
 Returns a list of fruits,
@@ -183,6 +204,65 @@ Throws an error like,
 
 ```shell
 http: error: ConnectionError: HTTPConnectionPool(host='192.168.64.9', port=30080): Max retries exceeded with url: /api/fruits/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x106c090a0>: Failed to establish a new connection: [Errno 61] Connection refused')) while doing a GET request to URL: http://192.168.64.9:30080/api/fruits/
+```
+
+### Mutual TLS (mTLS)
+
+To enhance the security we can enable Fruits API to be `mtLS`. To make it configured in mTLS mode update the Virtual Service as shown,
+
+```yaml
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: fruits-api
+  namespace: gloo-system
+spec:
+  displayName: FruitsAPI
+  sslConfig:
+    {-- oneWayTls: --}{--true--}
+    secretRef:
+      name: "${MINIKUBE_IP}.nip.io-tls"
+      namespace: gloo-system
+  virtualHost:
+    domains:
+      - "${MINIKUBE_IP}.nip.io"
+    routes:
+      # Application Routes
+      # ------------
+      - matchers:
+          - prefix: /api/
+        routeAction:
+          single:
+            upstream:
+              name: fruits-app-fruits-api-8080
+              namespace: gloo-system
+        options:
+          prefixRewrite: /v1/api/
+```
+
+Let us update the VirtualService to enable `mTLS`,
+
+```shell
+envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service-mtls.yaml \
+  | kubectl apply -f - 
+```
+
+Let us check the service again,
+
+```shell
+http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
+```
+
+Now let us add the client certificates and do the call again,
+
+```shell
+http "$GLOO_PROXY_URL/api/fruits/" 
+```
+
+Returns a list of fruits,
+
+```json
+--8<-- "includes/response.json"
 ```
 
 ---8<--- "includes/abbrevations.md"

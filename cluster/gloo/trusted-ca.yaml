@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  tls.crt: ${ROOT_CA_CERT}
+kind: Secret
+metadata:
+  name: trusted-ca
+  namespace: gloo-system

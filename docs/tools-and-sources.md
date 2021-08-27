@@ -31,6 +31,7 @@ cd gloo-security-tutorial
 For convinience, we will refer the clone demo sources folder as `$TUTORIAL_HOME`,
 
 ```shell
+export PROFILE_NAME="gloo-tutorial"
 export TUTORIAL_HOME="$PWD"
 ```
 

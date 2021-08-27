@@ -1,0 +1,17 @@
+apiVersion: certmanager.step.sm/v1beta1
+kind: StepIssuer
+metadata:
+  name: step-issuer
+  namespace: step-certificates-system
+spec:
+  # The CA URL.
+  url: https://step-certificates.step-certificates-system.svc.cluster.local
+  # The base64 encoded version of the CA root certificate in PEM format.
+  caBundle: ${ROOT_CA_CERT}
+  # The provisioner name, kid, and a reference to the provisioner password secret.
+  provisioner:
+    name: ${STEP_PROVISIONER_NAME}
+    kid: ${PROVISIONER_KID}
+    passwordRef:
+      name: step-certificates-provisioner-password
+      key: password

@@ -8,3 +8,4 @@
 *[PVC]: Persistent Volume Claim
 *[mTLS]: Mutual Transport Layer Security
 *[SSL]: Secure Sockets Layer
+*[CSR]: Certificate Signing Request

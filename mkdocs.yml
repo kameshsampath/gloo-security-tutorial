@@ -15,7 +15,7 @@ theme:
 nav:
   - 'Overview': "index.md"
   - 'Tools and Sources': "tools-and-sources.md"
-  - "Private ACME CA": "acme-ca.md"
+  - "CA and Issuer": "step-certificates.md"
   - 'Setup': "setup.md"
   - "Deploy Microservice": "deploy-app.md"
   - "Security with Gloo Edge":

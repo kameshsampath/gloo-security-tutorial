@@ -1,6 +1,0 @@
-namespace: my-certs
-
-resources:
-- namespace.yaml
-- issuer.yaml
-- certificate.yaml
