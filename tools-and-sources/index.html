@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tools" class="md-skip">
+        <a href="#download-tools" class="md-skip">
           Skip to content
         </a>
       
@@ -221,8 +221,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tools" class="md-nav__link">
-    Tools
+  <a href="#download-tools" class="md-nav__link">
+    Download Tools
   </a>
   
 </li>
@@ -420,8 +420,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tools" class="md-nav__link">
-    Tools
+  <a href="#download-tools" class="md-nav__link">
+    Download Tools
   </a>
   
 </li>
@@ -455,18 +455,66 @@
                 
                   <h1>Tools and Sources</h1>
                 
-                <h2 id="tools">Tools<a class="headerlink" href="#tools" title="Permanent link">&para;</a></h2>
-<p>We will be using the following tools as part of the tutorial. Please have them installed and configured before proceeding further,</p>
-<ul>
-<li><a href="https://minikube.sigs.k8s.io/docs/" target="_blank">minikube</a></li>
-<li><a href="https://helm.sh/docs/intro/install/" target="_blank">helm</a></li>
-<li><a href="https://docs.solo.io/gloo-edge/latest/getting_started/" target="_blank">glooctl</a></li>
-<li><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></li>
-<li><a href="https://kubectl.docs.kubernetes.io/installation/kubectl/" target="_blank">kubectl</a></li>
-<li><a href="https://kubectl.docs.kubernetes.io/installation/kustomize/" target="_blank">kustomize</a></li>
-<li><a href="https://smallstep.com/docs/step-cli/installation" target="_blank">step cli</a></li>
-<li>Gloo Edge Enterprise License Key</li>
-</ul>
+                <p>We will be using the following tools as part of the tutorial. Please have them installed and configured before proceeding further.</p>
+<h2 id="download-tools">Download Tools<a class="headerlink" href="#download-tools" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>macos</th>
+<th>linux</th>
+<th>windows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://minikube.sigs.k8s.io/docs/" target="_blank">minikube</a></td>
+<td><a href="https://minikube.sigs.k8s.io/docs/start/" target="_blank">Install</a></td>
+<td><a href="https://minikube.sigs.k8s.io/docs/start/" target="_blank">Install</a></td>
+<td><a href="https://minikube.sigs.k8s.io/docs/start/" target="_blank">Install</a></td>
+</tr>
+<tr>
+<td><a href="https://helm.sh" target="_blank">helm</a></td>
+<td><code>brew install helm</code></td>
+<td><a href="https://helm.sh/docs/intro/install/" target="_blank">Install</a></td>
+<td><code>choco install kubernetes-helm</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.solo.io/gloo-edge/latest/getting_started/" target="_blank">glooctl</a></td>
+<td><a href="https://github.com/solo-io/gloo/releases/download/v1.8.10/glooctl-darwin-amd64">Download</a></td>
+<td><a href="https://github.com/solo-io/gloo/releases/download/v1.8.10/glooctl-linux-amd64">Download</a></td>
+<td><a href="https://github.com/solo-io/gloo/releases/download/v1.8.10/glooctl-windows-amd64.exe">Download</a></td>
+</tr>
+<tr>
+<td><a href="https://stedolan.github.io/jq/" target="_blank">jq</a></td>
+<td><code>brew install jq</code></td>
+<td><a href="https://stedolan.github.io/jq/download/" target="_blank">Download</a></td>
+<td><code>chocolatey install jq</code></td>
+</tr>
+<tr>
+<td><a href="https://kubectl.docs.kubernetes.io" target="_blank">kubectl</a></td>
+<td><code>brew install kubectl</code></td>
+<td><a href="https://kubectl.docs.kubernetes.io/installation/kubectl/binaries/" target="_blank">Download</a></td>
+<td><code>choco install kubernetes-cli</code></td>
+</tr>
+<tr>
+<td><a href="https://kubectl.docs.kubernetes.io/installation/kustomize/" target="_blank">kustomize</a></td>
+<td><code>brew install kustomize</code></td>
+<td><a href="https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/" target="_blank">Download</a></td>
+<td><code>choco install kustomize</code></td>
+</tr>
+<tr>
+<td><a href="https://smallstep.com/docs/step-cli/installation" target="_blank">step cli</a></td>
+<td><code>brew install step</code></td>
+<td><a href="https://smallstep.com/docs/step-cli/installation#linux" target="_blank">Download</a></td>
+<td><a href="https://smallstep.com/docs/step-cli/installation#windows" target="_blank">Download</a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+</div>
+<p>You will need Gloo Edge Enterprise License Key to run the demo exercises. If you dont have one, get a trial license from <a href="https://www.solo.io/products/gloo-edge#enterprise-trial">solo.io</a>.</p>
 <h2 id="demo-sources">Demo Sources<a class="headerlink" href="#demo-sources" title="Permanent link">&para;</a></h2>
 <p>Clone the demo sources from the GitHub respository,</p>
 <div class="highlight"><pre><span></span><code>git clone https://github.com/kameshsampath/gloo-security-tutorial
@@ -477,8 +525,7 @@
 <span class="nb">export</span> <span class="nv">TUTORIAL_HOME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>
 </code></pre></div>
 <h2 id="kubernetes-cluster-setup">Kubernetes Cluster Setup<a class="headerlink" href="#kubernetes-cluster-setup" title="Permanent link">&para;</a></h2>
-<p>As part of this tutorial we will use minikube as our target cluster.</p>
-<p>To create the minikube cluster run the following command,</p>
+<p>As part of this tutorial we will use minikube as our target cluster. To create the minikube cluster run the following command,</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$TUTORIAL_HOME</span>/bin/start-minikube.sh
 </code></pre></div>
                 
