@@ -1,11 +1,11 @@
-# Gloo Edge
+# Gloo Edge Security Tutorial
 
-Demo showing
+The Gloo Edge security tutorial walking through various Gloo Edge security concepts with practical exercises.
 
 ## Run Doc site
 
 ```shell
-docker run --rm --name=gloo-edge-eks-demo-site -p 7070:8080 ghcr.io/kameshsampath/gloo-edge-demo-site
+docker run --rm --name=gloo-security-tutorial-site -p 7070:8080 ghcr.io/kameshsampath/gloo-security-tutorial-site
 ```
 
 The documentation site is now accessible via [localhost:7070](http://localhost:7070)
@@ -16,4 +16,4 @@ The documentation site is now accessible via [localhost:7070](http://localhost:7
 docker run -it --rm -p 8000:8000 -v "$(pwd):/usr/src/app" ghcr.io/kameshsampath/mkdocs-builder
 ```
 
-You can now access site via [localhost:8000](http://localhost:8000/gloo-edge-eks-a-demo)
+You can now access site via [localhost:8000](http://localhost:8000/)

@@ -21,7 +21,7 @@ clean:
 
 build:
 	@eval $$(minikube -p $(PROFILE_NAME) docker-env); \
-	docker build --rm -t $(IMAGE_TAG) -f $(CURRENT_DIR)/cluster/ca/Dockerfile $(CURRENT_DIR)/cluster/ca
+	docker build --rm -t $(IMAGE_TAG) -f Dockerfile $(CURRENT_DIR)
 
 push:	build
 	@eval $$(minikube -p $(PROFILE_NAME) docker-env); \

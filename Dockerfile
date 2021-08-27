@@ -11,6 +11,6 @@ RUN mkdocs build
 
 FROM registry.access.redhat.com/rhscl/httpd-24-rhel7
 
-LABEL org.opencontainers.image.source https://github.com/kameshsampath/gloo-edge-eks-a-demo
+LABEL org.opencontainers.image.source https://github.com/kameshsampath/gloo-security-tutorial
 
 COPY --from=builder /build/site/ /var/www/html/
