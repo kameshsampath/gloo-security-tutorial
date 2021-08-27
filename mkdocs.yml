@@ -15,8 +15,8 @@ theme:
 nav:
   - 'Overview': "index.md"
   - 'Tools and Sources': "tools-and-sources.md"
-  - "CA and Issuer": "step-certificates.md"
   - 'Setup': "setup.md"
+  - "CA and Issuer": "step-certificates.md"
   - "Deploy Microservice": "deploy-app.md"
   - "Security with Gloo Edge":
       - "Create Gloo Resources": "gloo-resources.md"

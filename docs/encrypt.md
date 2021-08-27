@@ -11,6 +11,16 @@ At the end of this chapter you would have known how to:
 - [x] Create Certificates for Fruits App
 - [x] Configure Gloo Virtual Service with SSL/TLS
 
+## Ensure Environment
+
+We will be using few enviornment variables that we crated earlier, validate if the output of the following print statements matches your environment,
+
+```shell
+echo "\nGloo Gateway Proxy IP: ${GLOO_GATEWAY_PROXY_IP} \n"
+echo "\nMinikube IP: ${MINIKUBE_IP} \n"
+echo "\nStepCA Password: ${STEP_CA_PASSWORD} \n"
+```
+
 ## Certifcate Request
 
 As part of earlier [chapter](./step-certificates.md), we have step our CA and `StepIssuer` that helps us to create `cert-manager` CertificateRequests to generate the certificates.
@@ -27,14 +37,18 @@ Let us create the CSR and keys,
 
 ```shell
 step certificate create gloo-demos --csr \
+  --san "${GLOO_GATEWAY_PROXY_IP}.nip.io" \
   --san "${MINIKUBE_IP}.nip.io" \
+  --san "*-${GLOO_GATEWAY_PROXY_IP}.nip.io" \
+  --san "*.${GLOO_GATEWAY_PROXY_IP}.nip.io" \
   --san "*-${MINIKUBE_IP}.nip.io" \
+  --san "${GLOO_GATEWAY_PROXY_IP}" \
   --san "${MINIKUBE_IP}" \
   --password-file $TUTORIAL_HOME/certs/password-file \
-  $TUTORIAL_HOME/certs/gloo-demos.csr $TUTORIAL_HOME/certs/gloo-demos.key
+  $TUTORIAL_HOME/certs/gloo-demos.csr $TUTORIAL_HOME/certs/gloo-demos-key
 ```
 
-If all goes well you should have the `gloo-demos.csr` and `gloo-demos.key` files in the `$TUTORIAL_HOME/certs` folder.
+If all goes well you should have the `gloo-demos.csr` and `gloo-demos-key` files in the `$TUTORIAL_HOME/certs` folder.
 
 ## Create Certificate Request
 
@@ -43,7 +57,7 @@ Having created the CSR we are good to create the  cert-manager's `CertificateReq
 As first step let us base64 encode the `gloo-demos` CSR,
 
 ```shell
-export GLOO_DEMOS_CSR=$(cat $TUTORIAL_HOME/certs/gloo-demos.csr | openssl base64 | tr -d '\n' )
+export GLOO_DEMOS_CSR=$(cat $TUTORIAL_HOME/certs/gloo-demos.csr | step base64 | tr -d '\n' )
 ```
 
 Create the `CertificateRequest`,
@@ -55,7 +69,7 @@ envsubst< $TUTORIAL_HOME/cluster/ssl/certificate-request.yaml | kubectl apply -f
 Check the status of the `CertificateRequest`,
 
 ```shell
-kubectl get certificaterequests.cert-manager.io -n step-certificates-system {MINIKUBE_IP}.nip.io -o json | jq '.status.conditions[]'
+kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${GLOO_GATEWAY_PROXY_IP}.nip.io -o json | jq '.status.conditions[]'
 ```
 
 If all went well you should see an output like,
@@ -82,25 +96,19 @@ Wait for the certificate to be updated in the request, you can check the same vi
 CA Certificate can be retrieved by,
 
 ```shell
-kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${MINIKUBE_IP}.nip.io -o json | jq -r '.status.certificate' | base64 -D >$TUTORIAL_HOME/certs/gloo-demos-ca.crt
+kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${GLOO_GATEWAY_PROXY_IP}.nip.io -o json | jq -r '.status.ca' | step base64 -d >$TUTORIAL_HOME/certs/gloo-demos-ca.crt
 ```
 
 TLS Certificate can be retrieved by,
 
 ```shell
-kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${MINIKUBE_IP}.nip.io -o json | jq -r '.status.certificate' | base64 -D > $TUTORIAL_HOME/certs/gloo-demos.crt
+kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${GLOO_GATEWAY_PROXY_IP}.nip.io -o json | jq -r '.status.certificate' | step base64 -d > $TUTORIAL_HOME/certs/gloo-demos.crt
 ```
 
 ## Verify Certificates
 
-Get the root CA bundle,
-
 ```shell
-kubectl get -n step-certificates-system -o jsonpath="{.data['root_ca\.crt']}" configmaps/step-certificates-certs  > $TUTORIAL_HOME/certs/root_ca.crt
-```
-
-```shell
-if step certificate verify $TUTORIAL_HOME/certs/gloo-demos.crt --roots $TUTORIAL_HOME/certs/root_ca.crt --host=$MINIKUBE_IP.nxp.io ;
+if step certificate verify $TUTORIAL_HOME/certs/gloo-demos.crt --roots $TUTORIAL_HOME/certs/root_ca.crt --host=$GLOO_GATEWAY_PROXY_IP.nip.io ;
 then
   echo 'Verification succeeded!'
 else
@@ -117,15 +125,35 @@ To be able to encrypt the traffic via Gloo Gateway, we need to configure the TLS
 Decrypt the private key that we used to create the Certificate Signing Request,
 
 ```shell
-step certificate key $TUTORIAL_HOME/certs/gloo-demos.key --out=$TUTORIAL_HOME/certs/gloo-demos-key.pem
+step certificate key $TUTORIAL_HOME/certs/gloo-demos-key --out=$TUTORIAL_HOME/certs/gloo-demos.key
 ```
+
+!!! note
+    The command out put says its public key, but its actually decrypted private key
 
 Let us create a Kubernetes secret that we will use later to configure the TLS for Gloo Virtual Service,
 
 ```shell
-glooctl create secret tls $MINIKUBE_IP.nip.io-tls \
+glooctl create secret tls $GLOO_GATEWAY_PROXY_IP.nip.io-tls \
   --certchain $TUTORIAL_HOME/certs/gloo-demos.crt \
-  --privatekey=$TUTORIAL_HOME/certs/gloo-demos-key.pem 
+  --privatekey=$TUTORIAL_HOME/certs/gloo-demos.key \
+  --rootca=$TUTORIAL_HOME/certs/root_ca.crt
+```
+
+```text
++---------------------------+------+
+|          SECRET           | TYPE |
++---------------------------+------+
+| 192.168.64.200.nip.io-tls | TLS  |
++---------------------------+------+
+```
+
+You can check the contents of the secret using,
+
+```shell
+kubectl get secrets -n gloo-system $GLOO_GATEWAY_PROXY_IP.nip.io-tls -o json \
+  | jq -r '.data.tls' \
+  | step base64 -d
 ```
 
 ## Gloo Proxy URLS
@@ -133,9 +161,8 @@ glooctl create secret tls $MINIKUBE_IP.nip.io-tls \
 Get the Gloo proxy URLs,
 
 ```shell
-export GLOO_HTTPS_PROXY_URL=$(glooctl proxy url --local-cluster-name="$PROFILE_NAME" \
-  --port=https)
-export GLOO_HTTP_PROXY_URL=$(glooctl proxy url --local-cluster-name="$PROFILE_NAME")
+export GLOO_HTTPS_PROXY_URL="https://${GLOO_GATEWAY_PROXY_IP}.nip.io"
+export GLOO_HTTP_PROXY_URL="http://${GLOO_GATEWAY_PROXY_IP}.nip.io"
 ```
 
 ## Encrypt Fruits API Route
@@ -156,11 +183,11 @@ spec:
   displayName: FruitsAPI
   sslConfig:
     secretRef:
-      name: "${MINIKUBE_IP}.nip.io-tls"
+      name: "${GLOO_GATEWAY_PROXY_IP}.nip.io-tls"
       namespace: gloo-system
   virtualHost:
     domains:
-      - "${MINIKUBE_IP}.nip.io"
+      - "${GLOO_GATEWAY_PROXY_IP}.nip.io"
     routes:
       # Application Routes
       # ------------
@@ -185,18 +212,16 @@ envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service-mtls
 Let us check the service,
 
 ```shell
-http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_HTTPS_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
+http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_HTTPS_PROXY_URL/api/fruits/"
 ```
 
 Even though we specifed the CA the call fails with the following error,
 
 ```text
-http: error: SSLError: HTTPSConnectionPool(host='192.168.64.12', port=30443): Max retries exceeded with url: /api/fruits/ (Caused by SSLError(SSLError(1, '{== [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 alert certificate required ==}(_ssl.c:2633)'))) while doing a GET request to URL: https://192.168.64.12:30443/api/fruits/
+http: error: SSLError: HTTPSConnectionPool(host='192.168.64.200.nip.io', port=443): Max retries exceeded with url: /api/fruits/ {== (Caused by SSLError(SSLError(1, '[SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 alert certificate required ==} (_ssl.c:2633)'))) while doing a GET request to URL: https://192.168.64.200.nip.io/api/fruits/
 ```
 
-The error means we need supply the client certificate and key as part of the request,
-
-By default Envoy Proxy does enable [mTLS](https://www.envoyproxy.io/docs/envoy/latest/start/quick-start/securing){target=_blank} when the Kubernetes secret has `ca.crt`. Since we not called it with client certificates the call fails with the error,
+The error means we need supply the client certificate and key as part of the request.By default Envoy Proxy does enable [mTLS](https://www.envoyproxy.io/docs/envoy/latest/start/quick-start/securing){target=_blank} when the Kubernetes secret has `ca.crt`. Since we not called it with client certificates the call fails with the error,
 
 Now let us add the client certificates and do the call again,
 
@@ -204,8 +229,8 @@ Now let us add the client certificates and do the call again,
 http \
  {== --verify="$TUTORIAL_HOME/certs/gloo-demos-ca.crt" ==}\
  {== --cert="$TUTORIAL_HOME/certs/gloo-demos.crt" ==}\
- {== --cert-key="$TUTORIAL_HOME/certs/gloo-demos-key.pem" ==}\
-  "$GLOO_HTTPS_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
+ {== --cert-key="$TUTORIAL_HOME/certs/gloo-demos.key" ==}\
+  "$GLOO_HTTPS_PROXY_URL/api/fruits/"
 ```
 
 The call is now sucessful returning the list of fruits,
@@ -220,13 +245,13 @@ The call is now sucessful returning the list of fruits,
 Let us verify the service over http,
 
 ```shell
-http "$GLOO_HTTP_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
+http "$GLOO_HTTP_PROXY_URL/api/fruits/"
 ```
 
 Throws an error like,
 
 ```shell
-http: error: ConnectionError: HTTPConnectionPool(host='192.168.64.12', port=30080): Max retries exceeded with url: /api/fruits/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x1066cda60>: Failed to establish a new connection: [Errno 61] Connection refused')) while doing a GET request to URL: http://192.168.64.12:30080/api/fruits/
+http: error: ConnectionError: HTTPConnectionPool(host='192.168.64.200.nip.io', port=80): Max retries exceeded with url: /api/fruits/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x1027dcb20>: Failed to establish a new connection: [Errno 61] Connection refused')) while doing a GET request to URL: http://192.168.64.200.nip.io/api/fruits/
 ```
 
 ### One Way TLS
@@ -236,7 +261,7 @@ In some use cases we are fine with one-way TLS i.e its enough the client can ver
 You can check the same using the command,
 
 ```shell
-kubectl get secrets -n gloo-system "$MINIKUBE_IP.nip.io-tls" -o json | jq -r '.data.tls' | step base64 -d
+kubectl get secrets -n gloo-system "$GLOO_GATEWAY_PROXY_IP.nip.io-tls" -o json | jq -r '.data.tls' | step base64 -d
 ```
 
 The outout of the command should have a key with name `rootCa`.
@@ -254,11 +279,11 @@ spec:
   sslConfig:
     {== oneWayTls: ==} {== true ==}
     secretRef:
-      name: "${MINIKUBE_IP}.nip.io-tls"
+      name: "${GLOO_GATEWAY_PROXY_IP}.nip.io-tls"
       namespace: gloo-system
   virtualHost:
     domains:
-      - "${MINIKUBE_IP}.nip.io"
+      - "${GLOO_GATEWAY_PROXY_IP}.nip.io"
     routes:
       # Application Routes
       # ------------
@@ -283,7 +308,7 @@ envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service-onwa
 Let us check the service over SSL,
 
 ```shell
-http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_HTTPS_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
+http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_HTTPS_PROXY_URL/api/fruits/"
 ```
 
 Returns a list of fruits,
@@ -295,11 +320,16 @@ Returns a list of fruits,
 As you saw now the service returned successfully with us just passing the CA alone, we can even skip passing CA by setting the `--verify=no` to the http call,
 
 ```shell
-http --verify=no "$GLOO_HTTPS_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
+http --verify=no "$GLOO_HTTPS_PROXY_URL/api/fruits/"
 ```
 
 As we have seen now to encrypt the traffic, in the next module we will see how to enable authentication.
 
+!!! tip
+    For you work with with these urls over Web Browser you need to install the certificates in system/browser truststore. Check `step certificate install --help` for more information.
+
 ---8<--- "includes/abbrevations.md"
+
+With us now successfully enabled and checked mTLS and one way TLS, let us see how to enable oAuth to access control our API.
 
 [^1]: [cert-manager Self-Signed Certificates](https://cert-manager.io/docs/configuration/selfsigned/){target=_blank}

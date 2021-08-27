@@ -8,8 +8,7 @@ date: 2021-08-19
 
 At the end of this chapter you would have,
 
-- [x] Installed Gloo Edge Enterprise 
-- [x] Configured Gloo Edge to use our custom CA
+- [x] Installed Gloo Edge Enterprise
 
 ## Ensure Environment
 
@@ -41,12 +40,6 @@ Create the `gloo-system` namespace to install `Gloo Edge`,
 kubectl create namespace gloo-system
 ```
 
-Create a secret with our custom CA root certificate,
-
-```shell
-envsubst < $TUTORIAL_HOME/cluster/gloo/trusted-ca.yaml | kubectl apply -f -
-```
-
 Add `helm` repository,
 
 ```shell
@@ -60,14 +53,6 @@ Get the latest Gloo Edge version,
 export GLOO_EE_VERSION=$(helm search repo glooe -ojson | jq -r '.[0].version')
 ```
 
-As we need to ensure that Gloo extauth uses our custom CA, we need to patch the Gloo' `extauth` deployment and inject our root CA.
-
-Run the command to create the patch with `$GLOO_EE_VERSION`,
-
-```shell
-envsubst < $TUTORIAL_HOME/cluster/gloo/extauth-patch-template > $TUTORIAL_HOME/cluster/gloo/extauth-patch.yaml
-```
-
 ## Install Gloo Edge
 
 Now we are all set to install Gloo Edge, Gloo Edge proxy is a Kubernetes service of type `LoadBalancer`, for the purpose of this blog we will configure it to be of type `NodePort` so that we can access from the host machine.
@@ -75,9 +60,6 @@ Now we are all set to install Gloo Edge, Gloo Edge proxy is a Kubernetes service
 ```shell
 helm install gloo glooe/gloo-ee --namespace gloo-system \
  --set license_key=$GLOO_LICENSE_KEY \
-{== --set gloo.gatewayProxies.gatewayProxy.service.httpsNodePort=30080 ==}\
-{== --set gloo.gatewayProxies.gatewayProxy.service.httpsNodePort=30443 ==}\
- --post-renderer $TUTORIAL_HOME/cluster/gloo/kustomize.sh \
  --wait
 ```
 
@@ -113,4 +95,10 @@ No problems detected.
 I0818 09:29:26.773174    6734 request.go:645] Throttling request took 1.041899775s, request: GET:https://127.0.0.1:57778/apis/storage.k8s.io/v1?timeout=32s
 
 Detected Gloo Federation!
+```
+
+Retrieve the Gloo Gateway Proxy IP address, we will need it to configure the root CA certificates,
+
+```shell
+export GLOO_GATEWAY_PROXY_IP=$(glooctl proxy address | cut -f1 -d':')
 ```

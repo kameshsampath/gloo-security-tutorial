@@ -1,29 +1,59 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: extauth
-spec:
-  template:
-    spec:
-      volumes:
-      - name: certs
-        emptyDir: {}
-      - name: ca-certs
-        secret:
-          secretName: trusted-ca
-          items:
-          - key: tls.crt
-            path: ca.crt
-      initContainers:
-      - name: add-ca-cert
-        image: quay.io/solo-io/extauth-ee:${GLOO_EE_VERSION}
-        command:
-          - sh
-        args:
-          - "-c"
-          - "cp -r /etc/ssl/certs/* /certs; cat /etc/ssl/certs/ca-certificates.crt /ca-certs/ca.crt > /certs/ca-certificates.crt"
-        volumeMounts:
-          - name: certs
-            mountPath: /certs
-          - name: ca-certs
-            mountPath: /ca-certs
+[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/volumeMounts",
+    "value": [
+      {
+        "name": "certs",
+        "mountPath": "/etc/ssl/certs/"
+      }
+    ]
+  },
+  {
+    "op": "add",
+    "path": "/spec/template/spec/volumes",
+    "value": [
+      {
+        "name": "certs",
+        "emptyDir": {}
+      },
+      {
+        "name": "ca-certs",
+        "secret": {
+          "secretName": "trusted-ca",
+          "items": [
+            {
+              "key": "tls.crt",
+              "path": "ca.crt"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "op": "add",
+    "path": "/spec/template/spec/initContainers",
+    "value": [
+      {
+        "name": "add-ca-cert",
+        "image": "${GLOO_EE_IMAGE}",
+        "command": ["sh"],
+        "args": [
+          "-c",
+          "cp -r /etc/ssl/certs/* /certs; cat /etc/ssl/certs/ca-certificates.crt /ca-certs/ca.crt > /certs/ca-certificates.crt"
+        ],
+        "volumeMounts": [
+          {
+            "name": "certs",
+            "mountPath": "/certs"
+          },
+          {
+            "name": "ca-certs",
+            "mountPath": "/ca-certs"
+          }
+        ]
+      }
+    ]
+  }
+]

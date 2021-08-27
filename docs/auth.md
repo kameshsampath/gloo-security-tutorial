@@ -25,14 +25,10 @@ We will use the following variables as part of this module,
 
 ```shell
 export MINIKUBE_IP=$(minikube -p $PROFILE_NAME ip)
-export GH_OAUTH_CLIENT_ID=<your github oauth client id> # (1)
-export GH_OAUTH_CLIENT_SECRET=<your github oauth client secret> # (2)
-export GH_OAUTH_ORG=<the github org to use> # (3)
+export GH_OAUTH_CLIENT_ID=<your github oauth client id>
+export GH_OAUTH_CLIENT_SECRET=<your github oauth client secret>
+export GH_OAUTH_ORG=<the github org to use>
 ```
-
-1. The GitHub oAuth Client Id
-2. The GitHub oAuth Client secret corresponding to client id
-3. The GitHub org or team to restrict the acess
 
 ## Create Github Secret Env file
 
@@ -47,7 +43,7 @@ Update the `$TUTORIAL_HOME/cluster/dex/github.env.secret` values to map to your 
 ## Deploy Dex
 
 ```shell
-kustomize build $TUTORIAL_HOME/cluster/dex | envsubst | kubectl apply -f - 
+kustomize build --load-restrictor='LoadRestrictionsNone' $TUTORIAL_HOME/cluster/dex | envsubst | kubectl apply -f - 
 ```
 
 Wait for the dex deployment to be up and running
@@ -64,7 +60,7 @@ We have configured the `fruits-app` static client to identify itself with dex us
 staticClients:
 - id: fruits-app
   redirectURIs:
-  - 'http://$MINIKUBE_IP:30080/callback'
+  - 'https://$MINIKUBE_IP:30443/callback'
   name: 'Fruits App'
   # value is fruits-app-secret
  secret: "nJ1aXRzLWFwcC1zZWNyZXQ="

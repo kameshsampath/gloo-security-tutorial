@@ -8,11 +8,11 @@ spec:
   sslConfig:
     oneWayTls: true
     secretRef:
-      name: "${MINIKUBE_IP}.nip.io-tls"
+      name: "${GLOO_GATEWAY_PROXY_IP}.nip.io-tls"
       namespace: gloo-system
   virtualHost:
     domains:
-      - "${MINIKUBE_IP}.nip.io"
+      - "${GLOO_GATEWAY_PROXY_IP}.nip.io"
     routes:
       # Application Routes
       # ------------

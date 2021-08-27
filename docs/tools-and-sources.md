@@ -46,3 +46,39 @@ As part of this tutorial we will use minikube as our target cluster. To create t
 ```shell
 $TUTORIAL_HOME/bin/start-minikube.sh
 ```
+
+### Metallb
+
+As we will need to access the Gloo Gateway proxy on the host, we will use [metallb](https://metallb.universe.tf) addon to minikube.
+
+Enable the metallb addon by running,
+
+```shell
+minikube -p$PROFILE_NAME addons enable metallb
+```
+
+Wait for the metallb deployment to be ready,
+
+```shell
+kubectl rollout status -n metallb-system deploy/controller --timeout=60s
+```
+
+Get the minikube IP by running the command,
+
+```shell
+export MINIKUBE_IP=$(minikube -p$PROFILE_NAME ip)
+echo $MINIKUBE_IP
+```
+
+Once the addon is enabled run the following command to configure the LoadBalancer IP range,
+
+```shell
+minikube -p $PROFILE_NAME addons configure metallb
+```
+
+!!! important
+    Ensure that the **Enter Load Balancer Start IP** and **Enter Load Balancer End IP** is in the same subnet of `$MINIKUBE_IP`.
+    For an example if `$MINIKUBE_IP` is `192.168.64.20`, the set the `Enter Load Balancer Start IP` to be something like `192.168.64.200` and `Enter Load Balancer End IP` to be something like `192.168.64.250`, that will give enough slack for you to create new minikube clusters without any ip clash.
+
+
+Once you have setup minikube you are all set to move to next chapter to setup the certificate authority.

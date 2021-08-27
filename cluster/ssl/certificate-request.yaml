@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1
 kind: CertificateRequest
 metadata:
-  name: ${MINIKUBE_IP}.nip.io
+  name: ${GLOO_GATEWAY_PROXY_IP}.nip.io
   namespace: step-certificates-system
 spec:
   # The base64 encoded version of the certificate request in PEM format.

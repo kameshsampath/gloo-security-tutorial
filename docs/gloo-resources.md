@@ -6,7 +6,7 @@ authors:
 date: 2021-08-19
 ---
 
-# Integrate with Gloo Edge
+## Integrate with Gloo Edge
 
 We have now deployed the Fruits API, in the up coming sections we will create the necessary Gloo Edge resources that will allow configure and access the API. To have more understanding on core concepts check the Gloo Edge [documentation](https://docs.solo.io/gloo-edge/latest/introduction/architecture/concepts/){target=_blank}.
 
@@ -15,11 +15,6 @@ At the end of this chapter you would have known how to:
 - [x] [Discover Upstreams](https://docs.solo.io/gloo-edge/latest/introduction/architecture/concepts/#upstreams){target=_blank}
 - [x] [Create Virtual Services](https://docs.solo.io/gloo-edge/latest/introduction/architecture/concepts/#virtual-services){target=_blank}
 
-## Ensure Environment
-
-```shell
-export MINIKUBE_IP=$(minikube -p $PROFILE_NAME ip)
-```
 
 ## Discover Upstreams
 
@@ -56,7 +51,7 @@ spec:
   displayName: FruitsAPI
   virtualHost:
     domains: # (1)
-      - "$MINIKUBE_IP.nip.io"
+      - "$GLOO_GATEWAY_PROXY_IP.nip.io"
     routes:
       # Application Routes
       # ------------
@@ -80,7 +75,7 @@ spec:
 Let us create the virutal service,
 
 ```shell
-kubectl apply -n gloo-system -f $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service.yaml
+envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service.yaml | kubectl apply -n gloo-system -f -
 ```
 
 Check the status of the virtual service
@@ -102,7 +97,7 @@ glooctl get vs fruits-api
 We need to use the Gloo proxy to access the API, we can use glooctl to get the proxy URL,
 
 ```shell
-export GLOO_PROXY_URL=$(glooctl proxy url)
+export GLOO_PROXY_URL="http://$GLOO_GATEWAY_PROXY_IP.nip.io"
 ```
 
 Check if the API is accessible,

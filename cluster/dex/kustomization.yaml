@@ -7,7 +7,11 @@ secretGenerator:
   - name: github-client
     envs:
      - github.env.secret
-
+  - name: dex-tls
+    files:
+      - tls.crt=../../certs/gloo-demos.crt
+      - tls.key=../../certs/gloo-demos-key.pem
+      - ca.crt=../../certs/gloo-demos-ca.crt
 configMapGenerator:
   - name: dex
     files:
@@ -16,7 +20,5 @@ resources:
   - namespace.yaml
   - sa.yaml
   - rbac.yaml
-  - issuer.yaml
-  - certificate.yaml
   - deployment.yaml
   - service.yaml

@@ -28,11 +28,15 @@ response.json
 *.tar.gz
 cluster/ssl/gloo/replacement.yaml
 github.env.secret
-cluster/gloo/extauth-patch.yaml
+cluster/gloo/extauth-patch.*
 cluster/gloo/all.yaml
-certs/**/*
 !bin/
 **/*.crt
+**/*.pem
+**/*.key
+**/*-key
+**/password-file
+**/*.csr
 cluster/step-ca/old
 cluster/step-ca/values.yaml
 !includes/response.json

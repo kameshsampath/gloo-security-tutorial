@@ -21,7 +21,7 @@ oauth2:
 staticClients:
 - id: fruits-app
   redirectURIs:
-  - 'http://$MINIKUBE_IP.nip.io:300443/callback'
+  - 'http://$MINIKUBE_IP.nip.io:30443/callback'
   name: 'Fruits App'
   # value is fruits-app-secret
   secret: nJ1aXRzLWFwcC1zZWNyZXQ=

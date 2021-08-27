@@ -1,6 +1,6 @@
 ---
 title: CA and Issuer
-summary: Setup Private ACME Certificate Authority.
+summary: Setup Private Certificate Authority.
 authors:
   - Kamesh Sampath
 date: 2021-08-19
@@ -19,7 +19,6 @@ At the end of this chapter you would have setup,
 ## Ensure Environment
 
 ```shell
-export MINIKUBE_IP=$(minikube -p$PROFILE_NAME ip)
 export STEP_CA_PASSWORD=password
 export STEP_PROVISIONER_NAME=mygloodemos@example.com
 ```
@@ -110,13 +109,25 @@ The step-issuer needs few credentials from the step-certficates that we deployed
 
 For convinience let us extract them and store in environment variables,
 
+Save the root CA file,
+
+```shell
+kubectl get -n step-certificates-system -o jsonpath="{.data['root_ca\.crt']}" configmaps/step-certificates-certs > $TUTORIAL_HOME/certs/root_ca.crt
+```
+
+You can inspect the root ca certficate by,
+
+```shell
+step certificate inspect $TUTORIAL_HOME/certs/root_ca.crt
+```
+
 Get CA root certifiate as PEM,
 
 ```shell
-export ROOT_CA_CERT=$(kubectl get -n step-certificates-system -o jsonpath="{.data['root_ca\.crt']}" configmaps/step-certificates-certs | openssl base64 | tr -d '\n')
+export ROOT_CA_CERT=$(kubectl get -n step-certificates-system -o jsonpath="{.data['root_ca\.crt']}" configmaps/step-certificates-certs | step base64 | tr -d '\n')
 ```
 
-Get the Provisioner Name,
+Get the Provisioner Key ID,
 
 ```shell
 export PROVISIONER_KID=$(kubectl get -n step-certificates-system -o jsonpath="{.data['ca\.json']}" configmaps/step-certificates-config \
@@ -140,6 +151,48 @@ do
 done
 ```
 
-We have now setup the Certifcate Authority and Issuer. In the next module we will setup gloo and make it trust the our CA.
+## Configure Gloo Edge
+
+We have now setup the Certifcate Authority and Issuer. We need to update the Gloo Edge deployment to trust the CA,
+
+Create a secret with our custom CA root certificate,
+
+```shell
+envsubst < $TUTORIAL_HOME/cluster/gloo/trusted-ca.yaml | kubectl apply -f -
+```
+
+As we need to ensure that Gloo extauth uses our custom CA, we need to patch the Gloo' `extauth` deployment and inject our root CA.
+
+```shell
+export GLOO_EE_IMAGE=$(kubectl get -n gloo-system deployments.apps extauth -o json | jq -r '.spec.template.spec.containers | .[] | select(.name == "extauth") | .image')
+```
+
+Create the patch,
+
+```shell
+envsubst < $TUTORIAL_HOME/cluster/gloo/extauth-patch-template > $TUTORIAL_HOME/cluster/gloo/extauth-patch.json
+```
+
+Run the command to patch the `extauth` deployment,
+
+```shell
+kubectl patch deployment -n gloo-system extauth --type='json' -p "$(cat $TUTORIAL_HOME/cluster/gloo/extauth-patch.json)"
+```
+
+Verify if the patch was successful,
+
+```shell
+exit_code=$(kubectl get pods -n gloo-system -l gloo=extauth -o json  | jq '.items[0].status.initContainerStatuses|.[]|select(.name=="add-ca-cert")|.state.terminated.exitCode')
+exit_reason=$(kubectl get pods -n gloo-system -l gloo=extauth -o json  | jq '.items[0].status.initContainerStatuses|.[]|select(.name=="add-ca-cert")|.state.terminated.reason')
+echo "Exit Code: $exit_code"
+echo "Exit Reason: $exit_reason"
+```
+
+You should see the following output,
+
+```text
+Exit Code: 0
+Exit Reason: "Completed"
+```
 
 [^1]: https://cert-manager.io/docs/configuration/external/

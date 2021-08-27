@@ -7,7 +7,7 @@ spec:
   displayName: FruitsAPI
   virtualHost:
     domains:
-      - "*"
+      - "${GLOO_GATEWAY_PROXY_IP}.nip.io"
     routes:
       # Application Routes
       # ------------
