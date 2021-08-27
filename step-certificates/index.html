@@ -610,7 +610,7 @@ helm repo update
 <h2 id="configure-gloo-edge">Configure Gloo Edge<a class="headerlink" href="#configure-gloo-edge" title="Permanent link">&para;</a></h2>
 <p>We have now setup the Certifcate Authority and Issuer. We need to update the Gloo Edge deployment to trust the CA,</p>
 <p>Create a secret with our custom CA root certificate,</p>
-<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/trusted-ca.yaml <span class="p">|</span> kubectl apply -f -
+<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/trusted-ca.yaml <span class="p">|</span> kubectl apply -n gloo-system -f -
 </code></pre></div>
 <p>As we need to ensure that Gloo extauth uses our custom CA, we need to patch the Gloo&rsquo; <code>extauth</code> deployment and inject our root CA.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_EE_IMAGE</span><span class="o">=</span><span class="k">$(</span>kubectl get -n gloo-system deployments.apps extauth -o json <span class="p">|</span> jq -r <span class="s1">&#39;.spec.template.spec.containers | .[] | select(.name == &quot;extauth&quot;) | .image&#39;</span><span class="k">)</span>
