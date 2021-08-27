@@ -1,0 +1,679 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="canonical" href="https://kameshsampath.github.io/gloo-edge-security-tutorial/step-certificates/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+    
+    
+      
+        <title>CA and Issuer - Gloo Edge Security Tutorial</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.be71726b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#overview" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Gloo Edge Security Tutorial" class="md-header__button md-logo" aria-label="Gloo Edge Security Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Gloo Edge Security Tutorial
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CA and Issuer
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Gloo Edge Security Tutorial" class="md-nav__button md-logo" aria-label="Gloo Edge Security Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Gloo Edge Security Tutorial
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools-and-sources/" class="md-nav__link">
+        Tools and Sources
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          CA and Issuer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        CA and Issuer
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ensure-environment" class="md-nav__link">
+    Ensure Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#download-all-cert-manager" class="md-nav__link">
+    Download all Cert Manager
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-cert-manager" class="md-nav__link">
+    Install Cert Manager
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-step-certificates" class="md-nav__link">
+    Deploy step-certificates
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-step-issuer" class="md-nav__link">
+    Install Step Issuer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-step-issuer" class="md-nav__link">
+    Deploy Step Issuer
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploy-app/" class="md-nav__link">
+        Deploy Microservice
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      <label class="md-nav__link" for="__nav_6">
+        Security with Gloo Edge
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Security with Gloo Edge" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Security with Gloo Edge
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gloo-resources/" class="md-nav__link">
+        Create Gloo Resources
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../encrypt/" class="md-nav__link">
+        Encrypt Traffic
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auth/" class="md-nav__link">
+        Authentication
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rate-limit/" class="md-nav__link">
+        Rate Limit
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/" class="md-nav__link">
+        Web Application Firewall
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cors/" class="md-nav__link">
+        CORS
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ensure-environment" class="md-nav__link">
+    Ensure Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#download-all-cert-manager" class="md-nav__link">
+    Download all Cert Manager
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-cert-manager" class="md-nav__link">
+    Install Cert Manager
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-step-certificates" class="md-nav__link">
+    Deploy step-certificates
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-step-issuer" class="md-nav__link">
+    Install Step Issuer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-step-issuer" class="md-nav__link">
+    Deploy Step Issuer
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>CA and Issuer</h1>
+                
+                <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>As part of this tutorial we will use the <a href="https://smallstep.com">step</a> to automate the setup local private CA. We will then use this CA to issue the certificates that we will use with Gloo as part of the other module exercises.</p>
+<p>At the end of this chapter you would have setup,</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Cert Manager</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> smallstep CA</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> smallstep Step Issuer</li>
+</ul>
+<h2 id="ensure-environment">Ensure Environment<a class="headerlink" href="#ensure-environment" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MINIKUBE_IP</span><span class="o">=</span><span class="k">$(</span>minikube -p<span class="nv">$PROFILE_NAME</span> ip<span class="k">)</span>
+<span class="nb">export</span> <span class="nv">STEP_CA_PASSWORD</span><span class="o">=</span>password
+<span class="nb">export</span> <span class="nv">STEP_PROVISIONER_NAME</span><span class="o">=</span>mygloodemos@example.com
+</code></pre></div>
+<h2 id="download-all-cert-manager">Download all Cert Manager<a class="headerlink" href="#download-all-cert-manager" title="Permanent link">&para;</a></h2>
+<p>Download and install <a href="https://github.com/jetstack/cert-manager/releases">cert-manager</a>. Ensure that cert-manager is added to the system-path.</p>
+<p>Verify <code>cert-manager</code>:</p>
+<div class="highlight"><pre><span></span><code>kubectl cert-manager version --short
+</code></pre></div>
+<p>The command should show an output like</p>
+<div class="highlight"><pre><span></span><code>Client Version: v1.5.1
+error: could not detect the cert-manager version: the cert-manager CRDs are not yet installed on the Kubernetes API server
+</code></pre></div>
+<h2 id="install-cert-manager">Install Cert Manager<a class="headerlink" href="#install-cert-manager" title="Permanent link">&para;</a></h2>
+<p>The error shown in the command is OK as we are yet to install the <code>cert-manager</code> in the cluster. Let us install by running,</p>
+<div class="highlight"><pre><span></span><code>kubectl cert-manager x install
+</code></pre></div>
+<p>Now running the version command <code>kubectl cert-manager version --short</code> again should show an output like:</p>
+<div class="highlight"><pre><span></span><code>Client Version: v1.5.1
+Server Version: v1.5.3
+</code></pre></div>
+<h2 id="deploy-step-certificates">Deploy step-certificates<a class="headerlink" href="#deploy-step-certificates" title="Permanent link">&para;</a></h2>
+<p>We can deploy the step-certificates to our existing kubernetes cluster using <code>helm</code>.</p>
+<p>Add <code>step-certificates</code> helm repository,</p>
+<div class="highlight"><pre><span></span><code>helm repo add smallstep https://smallstep.github.io/helm-charts/
+helm repo update
+</code></pre></div>
+<p>Update helm values file,</p>
+<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/step-ca/values.tpl &gt; <span class="nv">$TUTORIAL_HOME</span>/cluster/step-ca/values.yaml
+</code></pre></div>
+<p>Create the namespace to install <code>step-certificates</code>,</p>
+<div class="highlight"><pre><span></span><code>kubectl create ns step-certificates-system
+</code></pre></div>
+<p>Install <code>step-certificates</code> from repository,</p>
+<div class="highlight"><pre><span></span><code>helm install step-certificates smallstep/step-certificates <span class="se">\</span>
+  -n step-certificates-system <span class="se">\</span>
+  -f <span class="nv">$TUTORIAL_HOME</span>/cluster/step-ca/values.yaml <span class="se">\</span>
+  --wait
+</code></pre></div>
+<h2 id="install-step-issuer">Install Step Issuer<a class="headerlink" href="#install-step-issuer" title="Permanent link">&para;</a></h2>
+<p>We will use <a href="https://github.com/smallstep/step-issuer">step-issuer</a> as way to automate the certificate requests.</p>
+<p>Create the namespace to install <code>step-issuer-system</code>,</p>
+<div class="highlight"><pre><span></span><code>kubectl create ns step-issuer-system
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>helm install -n step-issuer-system step-issuer smallstep/step-issuer --wait
+</code></pre></div>
+<h2 id="deploy-step-issuer">Deploy Step Issuer<a class="headerlink" href="#deploy-step-issuer" title="Permanent link">&para;</a></h2>
+<p>In order to use the <code>step-certificates</code> CA we need to setup a <code>StepIssuer</code> to act as <code>cert-manager</code> issuer<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>The step-issuer needs few credentials from the step-certficates that we deployed earlier.</p>
+<p>For convinience let us extract them and store in environment variables,</p>
+<p>Get CA root certifiate as PEM,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">ROOT_CA_CERT</span><span class="o">=</span><span class="k">$(</span>kubectl get -n step-certificates-system -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data[&#39;root_ca\.crt&#39;]}&quot;</span> configmaps/step-certificates-certs <span class="p">|</span> openssl base64 <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span><span class="k">)</span>
+</code></pre></div>
+<p>Get the Provisioner Name,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PROVISIONER_KID</span><span class="o">=</span><span class="k">$(</span>kubectl get -n step-certificates-system -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data[&#39;ca\.json&#39;]}&quot;</span> configmaps/step-certificates-config <span class="se">\</span>
+  <span class="p">|</span> jq -r --arg NAME <span class="s2">&quot;</span><span class="nv">$STEP_PROVISIONER_NAME</span><span class="s2">&quot;</span> <span class="se">\</span>
+  <span class="s1">&#39;.authority.provisioners | .[] | select(.name == $NAME) | .key.kid&#39;</span> <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span> <span class="k">)</span>
+</code></pre></div>
+<p>Create the Issuer,</p>
+<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/step-ca/issuer.yaml <span class="p">|</span> kubectl apply -f -
+</code></pre></div>
+<p>Wait for the issuer to be ready,</p>
+<div class="highlight"><pre><span></span><code><span class="k">while</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="k">$(</span>kubectl get stepissuers.certmanager.step.sm -n step-certificates-system step-issuer -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.conditions|.[]|select(.type == &quot;Ready&quot;)|.status&#39;</span><span class="k">)</span><span class="s2">&quot;</span> !<span class="o">=</span> <span class="s2">&quot;True&quot;</span> <span class="o">]</span><span class="p">;</span>
+<span class="k">do</span>
+  <span class="nb">echo</span> <span class="s2">&quot;Waiting for StepIssuer to be ready&quot;</span>
+  sleep .3
+<span class="k">done</span>
+</code></pre></div>
+<p>We have now setup the Certifcate Authority and Issuer. In the next module we will setup gloo and make it trust the our CA.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>https://cert-manager.io/docs/configuration/external/&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../tools-and-sources/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Tools and Sources" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Tools and Sources
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Setup" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Setup
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tabs.link"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.56a63758.min.js"></script>
+      
+    
+  </body>
+</html>

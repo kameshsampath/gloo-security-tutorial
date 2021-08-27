@@ -1,0 +1,644 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="canonical" href="https://kameshsampath.github.io/gloo-edge-security-tutorial/gloo-resources/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+    
+    
+      
+        <title>Gloo Edge with Microservice - Gloo Edge Security Tutorial</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.be71726b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#integrate-with-gloo-edge" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Gloo Edge Security Tutorial" class="md-header__button md-logo" aria-label="Gloo Edge Security Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Gloo Edge Security Tutorial
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Gloo Edge with Microservice
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Gloo Edge Security Tutorial" class="md-nav__button md-logo" aria-label="Gloo Edge Security Tutorial" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Gloo Edge Security Tutorial
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools-and-sources/" class="md-nav__link">
+        Tools and Sources
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-certificates/" class="md-nav__link">
+        CA and Issuer
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploy-app/" class="md-nav__link">
+        Deploy Microservice
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" checked>
+      
+      <label class="md-nav__link" for="__nav_6">
+        Security with Gloo Edge
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Security with Gloo Edge" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Security with Gloo Edge
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Create Gloo Resources
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Create Gloo Resources
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ensure-environment" class="md-nav__link">
+    Ensure Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discover-upstreams" class="md-nav__link">
+    Discover Upstreams
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#route" class="md-nav__link">
+    Route
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#invoke-api" class="md-nav__link">
+    Invoke API
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../encrypt/" class="md-nav__link">
+        Encrypt Traffic
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auth/" class="md-nav__link">
+        Authentication
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rate-limit/" class="md-nav__link">
+        Rate Limit
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/" class="md-nav__link">
+        Web Application Firewall
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cors/" class="md-nav__link">
+        CORS
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ensure-environment" class="md-nav__link">
+    Ensure Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discover-upstreams" class="md-nav__link">
+    Discover Upstreams
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#route" class="md-nav__link">
+    Route
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#invoke-api" class="md-nav__link">
+    Invoke API
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="integrate-with-gloo-edge">Integrate with Gloo Edge<a class="headerlink" href="#integrate-with-gloo-edge" title="Permanent link">&para;</a></h1>
+<p>We have now deployed the Fruits API, in the up coming sections we will create the necessary Gloo Edge resources that will allow configure and access the API. To have more understanding on core concepts check the Gloo Edge <a href="https://docs.solo.io/gloo-edge/latest/introduction/architecture/concepts/" target="_blank">documentation</a>.</p>
+<p>At the end of this chapter you would have known how to:</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <a href="https://docs.solo.io/gloo-edge/latest/introduction/architecture/concepts/#upstreams" target="_blank">Discover Upstreams</a></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <a href="https://docs.solo.io/gloo-edge/latest/introduction/architecture/concepts/#virtual-services" target="_blank">Create Virtual Services</a></li>
+</ul>
+<h2 id="ensure-environment">Ensure Environment<a class="headerlink" href="#ensure-environment" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MINIKUBE_IP</span><span class="o">=</span><span class="k">$(</span>minikube -p <span class="nv">$PROFILE_NAME</span> ip<span class="k">)</span>
+</code></pre></div>
+<h2 id="discover-upstreams">Discover Upstreams<a class="headerlink" href="#discover-upstreams" title="Permanent link">&para;</a></h2>
+<p>The Gloo Edge installation that as done as part of the demo is enabled to do auto discovery of the upstreams. The Fruits API that we deployed earlier would have been discovered as <code>fruits-app-fruits-api-8080</code>.</p>
+<p>Let us check to see if thats available,</p>
+<div class="highlight"><pre><span></span><code>glooctl get upstream fruits-app-fruits-api-8080
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>-----------------------------------------------------------------------------+
+|          UPSTREAM          |    TYPE    |  STATUS  |          DETAILS          |
+-----------------------------------------------------------------------------+
+| fruits-app-fruits-api-8080 | Kubernetes | Accepted | svc name:      fruits-api |
+|                            |            |          | svc namespace: fruits-app |
+|                            |            |          | port:          8080       |
+|                            |            |          |                           |
+-----------------------------------------------------------------------------+
+</code></pre></div>
+<h2 id="route">Route<a class="headerlink" href="#route" title="Permanent link">&para;</a></h2>
+<p>A Route is a Gloo Virutal Service resource that allows us to access the API i.e. the services that are deployed on to Kubernetes.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gateway.solo.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">VirtualService</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fruits-api</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gloo-system</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">displayName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FruitsAPI</span>
+  <span class="nt">virtualHost</span><span class="p">:</span>
+    <span class="nt">domains</span><span class="p">:</span> <span class="c1"># (1)</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;$MINIKUBE_IP.nip.io&quot;</span>
+    <span class="nt">routes</span><span class="p">:</span>
+      <span class="c1"># Application Routes</span>
+      <span class="c1"># ------------</span>
+      <span class="p p-Indicator">-</span> <span class="nt">matchers</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="nt">prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/api/</span> <span class="c1">#(2)</span>
+        <span class="nt">routeAction</span><span class="p">:</span>
+          <span class="nt">single</span><span class="p">:</span>
+            <span class="nt">upstream</span><span class="p">:</span> <span class="c1">#(3)</span>
+              <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fruits-app-fruits-api-8080</span>
+              <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gloo-system</span>
+        <span class="nt">options</span><span class="p">:</span>
+          <span class="nt">prefixRewrite</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/v1/api/</span> <span class="c1">#(4)</span>
+</code></pre></div>
+<ol>
+<li>Domains that will be allowed by the Gateway</li>
+<li>The prefix to access the API</li>
+<li>The upstream that wil be used to route the request</li>
+<li>The url rewrite to do before passing the request to backend</li>
+</ol>
+<p>Let us create the virutal service,</p>
+<div class="highlight"><pre><span></span><code>kubectl apply -n gloo-system -f <span class="nv">$TUTORIAL_HOME</span>/apps/microservice/fruits-api/gloo/virtual-service.yaml
+</code></pre></div>
+<p>Check the status of the virtual service</p>
+<div class="highlight"><pre><span></span><code>glooctl get vs fruits-api
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>----------------------------------------------------------------------------------------------
+| VIRTUAL SERVICE | DISPLAY NAME | DOMAINS | SSL  |  STATUS  | LISTENERPLUGINS |       ROUTES        |
+----------------------------------------------------------------------------------------------
+| fruits-api      |              | *       | none | Accepted |                 | / -&gt; 1 destinations |
+----------------------------------------------------------------------------------------------
+</code></pre></div>
+<h2 id="invoke-api">Invoke API<a class="headerlink" href="#invoke-api" title="Permanent link">&para;</a></h2>
+<p>We need to use the Gloo proxy to access the API, we can use glooctl to get the proxy URL,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_PROXY_URL</span><span class="o">=</span><span class="k">$(</span>glooctl proxy url<span class="k">)</span>
+</code></pre></div>
+<p>Check if the API is accessible,</p>
+<div class="highlight"><pre><span></span><code>http <span class="nv">$GLOO_PROXY_URL</span>/api/fruits/
+</code></pre></div>
+<p>The command should return a list of fruits as shown,</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Apple&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Fall&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1F34E&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Banana&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Summer&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1F34C&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Blueberry&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Summer&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1FAD0&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Lemon&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Winter&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1F34B&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Mango&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Spring&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1F96D&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Orange&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Winter&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1F34A&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Pear&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Fall&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1F350&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Strawberry&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Spring&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1F353&quot;</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Watermelon&quot;</span><span class="p">,</span> <span class="nt">&quot;season&quot;</span><span class="p">:</span> <span class="s2">&quot;Summer&quot;</span><span class="p">,</span> <span class="nt">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;U+1F349&quot;</span> <span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../deploy-app/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Deploy Microservice" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Deploy Microservice
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../encrypt/" class="md-footer__link md-footer__link--next" aria-label="Next: Encrypt Traffic" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Encrypt Traffic
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tabs.link"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.56a63758.min.js"></script>
+      
+    
+  </body>
+</html>
