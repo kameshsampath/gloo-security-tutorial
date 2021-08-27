@@ -1,23 +1,27 @@
 ---
 title: Tools and Sources
-summary: Tools that are required for this tutorial.
+summary: Tools and demo sources that are required for this tutorial.
 authors:
   - Kamesh Sampath
 date: 2021-08-19
 ---
 
-## Tools
+We will be using the following tools as part of the tutorial. Please have them installed and configured before proceeding further.
 
-We will be using the following tools as part of the tutorial. Please have them installed and configured before proceeding further,
+## Download Tools
 
-- [minikube](https://minikube.sigs.k8s.io/docs/){target=_blank}
-- [helm](https://helm.sh/docs/intro/install/){target=_blank}
-- [glooctl](https://docs.solo.io/gloo-edge/latest/getting_started/){target=_blank}
-- [jq](https://stedolan.github.io/jq/){target=_blank}
-- [kubectl](https://kubectl.docs.kubernetes.io/installation/kubectl/){target=_blank}
-- [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/){target=_blank}
-- [step cli](https://smallstep.com/docs/step-cli/installation){target=_blank}
-- Gloo Edge Enterprise License Key
+| Tool      | macos                          | linux | windows|
+| ----------- | ----------- |  ----------- | ----------- |
+[minikube](https://minikube.sigs.k8s.io/docs/){target=_blank} |[Install](https://minikube.sigs.k8s.io/docs/start/){target=_blank}|[Install](https://minikube.sigs.k8s.io/docs/start/){target=_blank}|[Install](https://minikube.sigs.k8s.io/docs/start/){target=_blank}
+|[helm](https://helm.sh){target=_blank}| `brew install helm`|[Install](https://helm.sh/docs/intro/install/){target=_blank}|`choco install kubernetes-helm`
+|[glooctl](https://docs.solo.io/gloo-edge/latest/getting_started/){target=_blank}|[Download](https://github.com/solo-io/gloo/releases/download/v1.8.10/glooctl-darwin-amd64)|[Download](https://github.com/solo-io/gloo/releases/download/v1.8.10/glooctl-linux-amd64)|[Download](https://github.com/solo-io/gloo/releases/download/v1.8.10/glooctl-windows-amd64.exe)
+|[jq](https://stedolan.github.io/jq/){target=_blank}|`brew install jq`|[Download](https://stedolan.github.io/jq/download/){target=_blank}|`chocolatey install jq`
+|[kubectl](https://kubectl.docs.kubernetes.io){target=_blank}|`brew install kubectl`|[Download](https://kubectl.docs.kubernetes.io/installation/kubectl/binaries/){target=_blank}|`choco install kubernetes-cli`
+|[kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/){target=_blank}|`brew install kustomize`|[Download](https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/){target=_blank}|`choco install kustomize`
+|[step cli](https://smallstep.com/docs/step-cli/installation){target=_blank}|`brew install step`|[Download](https://smallstep.com/docs/step-cli/installation#linux){target=_blank}|[Download](https://smallstep.com/docs/step-cli/installation#windows){target=_blank}
+
+!!! important
+  You will need Gloo Edge Enterprise License Key to run the demo exercises. If you dont have one, get a trial license from [solo.io](https://www.solo.io/products/gloo-edge#enterprise-trial).
 
 ## Demo Sources
 
@@ -37,9 +41,7 @@ export TUTORIAL_HOME="$PWD"
 
 ## Kubernetes Cluster Setup
 
-As part of this tutorial we will use minikube as our target cluster.
-
-To create the minikube cluster run the following command,
+As part of this tutorial we will use minikube as our target cluster. To create the minikube cluster run the following command,
 
 ```shell
 $TUTORIAL_HOME/bin/start-minikube.sh
