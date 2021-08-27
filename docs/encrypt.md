@@ -128,13 +128,25 @@ glooctl create secret tls $MINIKUBE_IP.nip.io-tls \
   --privatekey=$TUTORIAL_HOME/certs/gloo-demos-key.pem 
 ```
 
+## Gloo Proxy URLS
+
+Get the Gloo proxy URLs,
+
+```shell
+export GLOO_HTTPS_PROXY_URL=$(glooctl proxy url --local-cluster-name="$PROFILE_NAME" \
+  --port=https)
+export GLOO_HTTP_PROXY_URL=$(glooctl proxy url --local-cluster-name="$PROFILE_NAME")
+```
+
 ## Encrypt Fruits API Route
 
-### One Way TLS
+As we have all the infrastructure ready to encrypt the traffic let us now configure the `fruits-api` Virtual Service to encrypt the traffic with our certificates.
 
-Let us update the Virtual Service to enable SSL via the `sslConfig` block as shown,
+### Mutual TLS (mTLS)
 
-```yaml hl_lines="8-12"
+Let us update the `fruits-api` Virtual Service to enable SSL via the `sslConfig` block as shown,
+
+```yaml  hl_lines="8-12"
 apiVersion: gateway.solo.io/v1
 kind: VirtualService
 metadata:
@@ -143,7 +155,6 @@ metadata:
 spec:
   displayName: FruitsAPI
   sslConfig:
-    oneWayTls: true # (1)
     secretRef:
       name: "${MINIKUBE_IP}.nip.io-tls"
       namespace: gloo-system
@@ -164,51 +175,73 @@ spec:
           prefixRewrite: /v1/api/
 ```
 
-1. By default Envoy Proxy does enable [mTLS](https://www.envoyproxy.io/docs/envoy/latest/start/quick-start/securing){target=_blank} when the Kubernetes secret has `ca.crt`.For this demo we will make this one way TLS by just trusting server alone.
-
-Update the Virtual Service by adding the certs block,
+Apply the changes by running,
 
 ```shell
-envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service-ssl.yaml \
+envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service-mtls.yaml \
   | kubectl apply -f - 
 ```
 
-Get the HTTPS proxy URL,
+Let us check the service,
 
 ```shell
-export GLOO_PROXY_URL=$(glooctl proxy url --local-cluster-name="$PROFILE_NAME" \
-  --port=https)
+http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_HTTPS_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
 ```
 
-Let us check the service over SSL,
+Even though we specifed the CA the call fails with the following error,
+
+```text
+http: error: SSLError: HTTPSConnectionPool(host='192.168.64.12', port=30443): Max retries exceeded with url: /api/fruits/ (Caused by SSLError(SSLError(1, '{== [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 alert certificate required ==}(_ssl.c:2633)'))) while doing a GET request to URL: https://192.168.64.12:30443/api/fruits/
+```
+
+The error means we need supply the client certificate and key as part of the request,
+
+By default Envoy Proxy does enable [mTLS](https://www.envoyproxy.io/docs/envoy/latest/start/quick-start/securing){target=_blank} when the Kubernetes secret has `ca.crt`. Since we not called it with client certificates the call fails with the error,
+
+Now let us add the client certificates and do the call again,
 
 ```shell
-http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
+http \
+ {== --verify="$TUTORIAL_HOME/certs/gloo-demos-ca.crt" ==}\
+ {== --cert="$TUTORIAL_HOME/certs/gloo-demos.crt" ==}\
+ {== --cert-key="$TUTORIAL_HOME/certs/gloo-demos-key.pem" ==}\
+  "$GLOO_HTTPS_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
 ```
 
-Returns a list of fruits,
+The call is now sucessful returning the list of fruits,
 
 ```json
 --8<-- "includes/response.json"
 ```
 
-With us having enabled SSL, Gloo Edge will route all the traffic over **https** i.e. we will not able to acess the service over **http**.
+!!! note
+    When we created the [signing request](#create-certificate-request) we created it to be used for both client/server auth. When in production its recommended to have seperate client and server certificates.
 
-Let us verify the sam by calling the service over http,
+Let us verify the service over http,
 
 ```shell
-$TUTORIAL_HOME/bin/call.sh
+http "$GLOO_HTTP_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
 ```
 
 Throws an error like,
 
 ```shell
-http: error: ConnectionError: HTTPConnectionPool(host='192.168.64.9', port=30080): Max retries exceeded with url: /api/fruits/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x106c090a0>: Failed to establish a new connection: [Errno 61] Connection refused')) while doing a GET request to URL: http://192.168.64.9:30080/api/fruits/
+http: error: ConnectionError: HTTPConnectionPool(host='192.168.64.12', port=30080): Max retries exceeded with url: /api/fruits/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x1066cda60>: Failed to establish a new connection: [Errno 61] Connection refused')) while doing a GET request to URL: http://192.168.64.12:30080/api/fruits/
 ```
 
-### Mutual TLS (mTLS)
+### One Way TLS
 
-To enhance the security we can enable Fruits API to be `mtLS`. To make it configured in mTLS mode update the Virtual Service as shown,
+In some use cases we are fine with one-way TLS i.e its enough the client can verify the server identity. As we learnt in the previous section that Gloo by default enables mTLS when the sslConfig secret has CA certificate in it.
+
+You can check the same using the command,
+
+```shell
+kubectl get secrets -n gloo-system "$MINIKUBE_IP.nip.io-tls" -o json | jq -r '.data.tls' | step base64 -d
+```
+
+The outout of the command should have a key with name `rootCa`.
+
+To make the service as one-way TLS we need to enable the `oneWayTls` flag in the sslConfig of the Virtual Service as shown,
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -219,7 +252,7 @@ metadata:
 spec:
   displayName: FruitsAPI
   sslConfig:
-    {-- oneWayTls: --}{--true--}
+    {== oneWayTls: ==} {== true ==}
     secretRef:
       name: "${MINIKUBE_IP}.nip.io-tls"
       namespace: gloo-system
@@ -240,23 +273,17 @@ spec:
           prefixRewrite: /v1/api/
 ```
 
-Let us update the VirtualService to enable `mTLS`,
+Update the Virtual Service by runing,
 
 ```shell
-envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service-mtls.yaml \
+envsubst < $TUTORIAL_HOME/apps/microservice/fruits-api/gloo/virtual-service-onway-tls.yaml \
   | kubectl apply -f - 
 ```
 
-Let us check the service again,
+Let us check the service over SSL,
 
 ```shell
-http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
-```
-
-Now let us add the client certificates and do the call again,
-
-```shell
-http "$GLOO_PROXY_URL/api/fruits/" 
+http --verify=$TUTORIAL_HOME/certs/gloo-demos-ca.crt "$GLOO_HTTPS_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
 ```
 
 Returns a list of fruits,
@@ -264,6 +291,14 @@ Returns a list of fruits,
 ```json
 --8<-- "includes/response.json"
 ```
+
+As you saw now the service returned successfully with us just passing the CA alone, we can even skip passing CA by setting the `--verify=no` to the http call,
+
+```shell
+http --verify=no "$GLOO_HTTPS_PROXY_URL/api/fruits/" "Host:$MINIKUBE_IP.nip.io"
+```
+
+As we have seen now to encrypt the traffic, in the next module we will see how to enable authentication.
 
 ---8<--- "includes/abbrevations.md"
 
