@@ -205,21 +205,6 @@
 
   
   
-  
-    <li class="md-nav__item">
-      <a href="../step-certificates/" class="md-nav__link">
-        CA and Issuer
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
     
   
   
@@ -289,6 +274,21 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-certificates/" class="md-nav__link">
+        CA and Issuer
+      </a>
     </li>
   
 
@@ -485,8 +485,7 @@
                 
                 <p>At the end of this chapter you would have,</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Installed Gloo Edge Enterprise </li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Configured Gloo Edge to use our custom CA</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Installed Gloo Edge Enterprise</li>
 </ul>
 <h2 id="ensure-environment">Ensure Environment<a class="headerlink" href="#ensure-environment" title="Permanent link">&para;</a></h2>
 <p>Make sure you have the Gloo Enterprise License Key before proceeding to install. Export the license key to variable,</p>
@@ -503,9 +502,6 @@
 <p>Create the <code>gloo-system</code> namespace to install <code>Gloo Edge</code>,</p>
 <div class="highlight"><pre><span></span><code>kubectl create namespace gloo-system
 </code></pre></div>
-<p>Create a secret with our custom CA root certificate,</p>
-<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/trusted-ca.yaml <span class="p">|</span> kubectl apply -f -
-</code></pre></div>
 <p>Add <code>helm</code> repository,</p>
 <div class="highlight"><pre><span></span><code>helm repo add glooe https://storage.googleapis.com/gloo-ee-helm
 helm repo update
@@ -513,17 +509,10 @@ helm repo update
 <p>Get the latest Gloo Edge version,</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_EE_VERSION</span><span class="o">=</span><span class="k">$(</span>helm search repo glooe -ojson <span class="p">|</span> jq -r <span class="s1">&#39;.[0].version&#39;</span><span class="k">)</span>
 </code></pre></div>
-<p>As we need to ensure that Gloo extauth uses our custom CA, we need to patch the Gloo&rsquo; <code>extauth</code> deployment and inject our root CA.</p>
-<p>Run the command to create the patch with <code>$GLOO_EE_VERSION</code>,</p>
-<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/extauth-patch-template &gt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/extauth-patch.yaml
-</code></pre></div>
 <h2 id="install-gloo-edge">Install Gloo Edge<a class="headerlink" href="#install-gloo-edge" title="Permanent link">&para;</a></h2>
 <p>Now we are all set to install Gloo Edge, Gloo Edge proxy is a Kubernetes service of type <code>LoadBalancer</code>, for the purpose of this blog we will configure it to be of type <code>NodePort</code> so that we can access from the host machine.</p>
 <div class="highlight"><pre><span></span><code>helm install gloo glooe/gloo-ee --namespace gloo-system <span class="se">\</span>
  --set <span class="nv">license_key</span><span class="o">=</span><span class="nv">$GLOO_LICENSE_KEY</span> <span class="se">\</span>
-<mark class="critic"> --set gloo.gatewayProxies.gatewayProxy.service.httpsNodePort<span class="o">=</span><span class="m">30080</span> </mark><span class="se">\</span>
-<mark class="critic"> --set gloo.gatewayProxies.gatewayProxy.service.httpsNodePort<span class="o">=</span><span class="m">30443</span> </mark><span class="se">\</span>
- --post-renderer <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/kustomize.sh <span class="se">\</span>
  --wait
 </code></pre></div>
 <div class="admonition note">
@@ -556,6 +545,9 @@ I0818 09:29:26.773174    6734 request.go:645] Throttling request took 1.04189977
 
 Detected Gloo Federation!
 </code></pre></div>
+<p>Retrieve the Gloo Gateway Proxy IP address, we will need it to configure the root CA certificates,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="o">=</span><span class="k">$(</span>glooctl proxy address <span class="p">|</span> cut -f1 -d<span class="s1">&#39;:&#39;</span><span class="k">)</span>
+</code></pre></div>
                 
                   
                 
@@ -577,7 +569,7 @@ Detected Gloo Federation!
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../step-certificates/" class="md-footer__link md-footer__link--prev" aria-label="Previous: CA and Issuer" rel="prev">
+        <a href="../tools-and-sources/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Tools and Sources" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -586,20 +578,20 @@ Detected Gloo Federation!
               <span class="md-footer__direction">
                 Previous
               </span>
-              CA and Issuer
+              Tools and Sources
             </div>
           </div>
         </a>
       
       
         
-        <a href="../deploy-app/" class="md-footer__link md-footer__link--next" aria-label="Next: Deploy Microservice" rel="next">
+        <a href="../step-certificates/" class="md-footer__link md-footer__link--next" aria-label="Next: CA and Issuer" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Deploy Microservice
+              CA and Issuer
             </div>
           </div>
           <div class="md-footer__button md-icon">

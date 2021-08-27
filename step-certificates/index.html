@@ -205,6 +205,21 @@
 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -284,25 +299,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#configure-gloo-edge" class="md-nav__link">
+    Configure Gloo Edge
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../setup/" class="md-nav__link">
-        Setup
-      </a>
     </li>
   
 
@@ -496,6 +503,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#configure-gloo-edge" class="md-nav__link">
+    Configure Gloo Edge
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -520,8 +534,7 @@
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> smallstep Step Issuer</li>
 </ul>
 <h2 id="ensure-environment">Ensure Environment<a class="headerlink" href="#ensure-environment" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MINIKUBE_IP</span><span class="o">=</span><span class="k">$(</span>minikube -p<span class="nv">$PROFILE_NAME</span> ip<span class="k">)</span>
-<span class="nb">export</span> <span class="nv">STEP_CA_PASSWORD</span><span class="o">=</span>password
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">STEP_CA_PASSWORD</span><span class="o">=</span>password
 <span class="nb">export</span> <span class="nv">STEP_PROVISIONER_NAME</span><span class="o">=</span>mygloodemos@example.com
 </code></pre></div>
 <h2 id="download-all-cert-manager">Download all Cert Manager<a class="headerlink" href="#download-all-cert-manager" title="Permanent link">&para;</a></h2>
@@ -570,10 +583,16 @@ helm repo update
 <p>In order to use the <code>step-certificates</code> CA we need to setup a <code>StepIssuer</code> to act as <code>cert-manager</code> issuer<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
 <p>The step-issuer needs few credentials from the step-certficates that we deployed earlier.</p>
 <p>For convinience let us extract them and store in environment variables,</p>
-<p>Get CA root certifiate as PEM,</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">ROOT_CA_CERT</span><span class="o">=</span><span class="k">$(</span>kubectl get -n step-certificates-system -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data[&#39;root_ca\.crt&#39;]}&quot;</span> configmaps/step-certificates-certs <span class="p">|</span> openssl base64 <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span><span class="k">)</span>
+<p>Save the root CA file,</p>
+<div class="highlight"><pre><span></span><code>kubectl get -n step-certificates-system -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data[&#39;root_ca\.crt&#39;]}&quot;</span> configmaps/step-certificates-certs &gt; <span class="nv">$TUTORIAL_HOME</span>/certs/root_ca.crt
 </code></pre></div>
-<p>Get the Provisioner Name,</p>
+<p>You can inspect the root ca certficate by,</p>
+<div class="highlight"><pre><span></span><code>step certificate inspect <span class="nv">$TUTORIAL_HOME</span>/certs/root_ca.crt
+</code></pre></div>
+<p>Get CA root certifiate as PEM,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">ROOT_CA_CERT</span><span class="o">=</span><span class="k">$(</span>kubectl get -n step-certificates-system -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data[&#39;root_ca\.crt&#39;]}&quot;</span> configmaps/step-certificates-certs <span class="p">|</span> step base64 <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span><span class="k">)</span>
+</code></pre></div>
+<p>Get the Provisioner Key ID,</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PROVISIONER_KID</span><span class="o">=</span><span class="k">$(</span>kubectl get -n step-certificates-system -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data[&#39;ca\.json&#39;]}&quot;</span> configmaps/step-certificates-config <span class="se">\</span>
   <span class="p">|</span> jq -r --arg NAME <span class="s2">&quot;</span><span class="nv">$STEP_PROVISIONER_NAME</span><span class="s2">&quot;</span> <span class="se">\</span>
   <span class="s1">&#39;.authority.provisioners | .[] | select(.name == $NAME) | .key.kid&#39;</span> <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span> <span class="k">)</span>
@@ -588,7 +607,30 @@ helm repo update
   sleep .3
 <span class="k">done</span>
 </code></pre></div>
-<p>We have now setup the Certifcate Authority and Issuer. In the next module we will setup gloo and make it trust the our CA.</p>
+<h2 id="configure-gloo-edge">Configure Gloo Edge<a class="headerlink" href="#configure-gloo-edge" title="Permanent link">&para;</a></h2>
+<p>We have now setup the Certifcate Authority and Issuer. We need to update the Gloo Edge deployment to trust the CA,</p>
+<p>Create a secret with our custom CA root certificate,</p>
+<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/trusted-ca.yaml <span class="p">|</span> kubectl apply -f -
+</code></pre></div>
+<p>As we need to ensure that Gloo extauth uses our custom CA, we need to patch the Gloo&rsquo; <code>extauth</code> deployment and inject our root CA.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_EE_IMAGE</span><span class="o">=</span><span class="k">$(</span>kubectl get -n gloo-system deployments.apps extauth -o json <span class="p">|</span> jq -r <span class="s1">&#39;.spec.template.spec.containers | .[] | select(.name == &quot;extauth&quot;) | .image&#39;</span><span class="k">)</span>
+</code></pre></div>
+<p>Create the patch,</p>
+<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/extauth-patch-template &gt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/extauth-patch.json
+</code></pre></div>
+<p>Run the command to patch the <code>extauth</code> deployment,</p>
+<div class="highlight"><pre><span></span><code>kubectl patch deployment -n gloo-system extauth --type<span class="o">=</span><span class="s1">&#39;json&#39;</span> -p <span class="s2">&quot;</span><span class="k">$(</span>cat <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/extauth-patch.json<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+<p>Verify if the patch was successful,</p>
+<div class="highlight"><pre><span></span><code><span class="nv">exit_code</span><span class="o">=</span><span class="k">$(</span>kubectl get pods -n gloo-system -l <span class="nv">gloo</span><span class="o">=</span>extauth -o json  <span class="p">|</span> jq <span class="s1">&#39;.items[0].status.initContainerStatuses|.[]|select(.name==&quot;add-ca-cert&quot;)|.state.terminated.exitCode&#39;</span><span class="k">)</span>
+<span class="nv">exit_reason</span><span class="o">=</span><span class="k">$(</span>kubectl get pods -n gloo-system -l <span class="nv">gloo</span><span class="o">=</span>extauth -o json  <span class="p">|</span> jq <span class="s1">&#39;.items[0].status.initContainerStatuses|.[]|select(.name==&quot;add-ca-cert&quot;)|.state.terminated.reason&#39;</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;Exit Code: </span><span class="nv">$exit_code</span><span class="s2">&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;Exit Reason: </span><span class="nv">$exit_reason</span><span class="s2">&quot;</span>
+</code></pre></div>
+<p>You should see the following output,</p>
+<div class="highlight"><pre><span></span><code>Exit Code: 0
+Exit Reason: &quot;Completed&quot;
+</code></pre></div>
 <div class="footnote">
 <hr />
 <ol>
@@ -618,7 +660,7 @@ helm repo update
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../tools-and-sources/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Tools and Sources" rel="prev">
+        <a href="../setup/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Setup" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -627,20 +669,20 @@ helm repo update
               <span class="md-footer__direction">
                 Previous
               </span>
-              Tools and Sources
+              Setup
             </div>
           </div>
         </a>
       
       
         
-        <a href="../setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Setup" rel="next">
+        <a href="../deploy-app/" class="md-footer__link md-footer__link--next" aria-label="Next: Deploy Microservice" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Setup
+              Deploy Microservice
             </div>
           </div>
           <div class="md-footer__button md-icon">

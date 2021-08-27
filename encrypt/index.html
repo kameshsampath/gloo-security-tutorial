@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#certifcate-request" class="md-skip">
+        <a href="#ensure-environment" class="md-skip">
           Skip to content
         </a>
       
@@ -207,8 +207,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-certificates/" class="md-nav__link">
-        CA and Issuer
+      <a href="../setup/" class="md-nav__link">
+        Setup
       </a>
     </li>
   
@@ -222,8 +222,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../setup/" class="md-nav__link">
-        Setup
+      <a href="../step-certificates/" class="md-nav__link">
+        CA and Issuer
       </a>
     </li>
   
@@ -314,6 +314,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ensure-environment" class="md-nav__link">
+    Ensure Environment
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#certifcate-request" class="md-nav__link">
@@ -463,6 +470,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#ensure-environment" class="md-nav__link">
+    Ensure Environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#certifcate-request" class="md-nav__link">
     Certifcate Request
   </a>
@@ -544,6 +558,12 @@
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Create Certificates for Fruits App</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Configure Gloo Virtual Service with <abbr title="Secure Sockets Layer">SSL</abbr>/TLS</li>
 </ul>
+<h2 id="ensure-environment">Ensure Environment<a class="headerlink" href="#ensure-environment" title="Permanent link">&para;</a></h2>
+<p>We will be using few enviornment variables that we crated earlier, validate if the output of the following print statements matches your environment,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s2">&quot;\nGloo Gateway Proxy IP: </span><span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span><span class="s2"> \n&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;\nMinikube IP: </span><span class="si">${</span><span class="nv">MINIKUBE_IP</span><span class="si">}</span><span class="s2"> \n&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;\nStepCA Password: </span><span class="si">${</span><span class="nv">STEP_CA_PASSWORD</span><span class="si">}</span><span class="s2"> \n&quot;</span>
+</code></pre></div>
 <h2 id="certifcate-request">Certifcate Request<a class="headerlink" href="#certifcate-request" title="Permanent link">&para;</a></h2>
 <p>As part of earlier <a href="../step-certificates/">chapter</a>, we have step our CA and <code>StepIssuer</code> that helps us to create <code>cert-manager</code> CertificateRequests to generate the certificates.</p>
 <p>As first step of that we need to create a <abbr title="Certificate Signing Request">CSR</abbr>, we can use step cli to create the <abbr title="Certificate Signing Request">CSR</abbr>.</p>
@@ -552,23 +572,27 @@
 </code></pre></div>
 <p>Let us create the <abbr title="Certificate Signing Request">CSR</abbr> and keys,</p>
 <div class="highlight"><pre><span></span><code>step certificate create gloo-demos --csr <span class="se">\</span>
+  --san <span class="s2">&quot;</span><span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
   --san <span class="s2">&quot;</span><span class="si">${</span><span class="nv">MINIKUBE_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
+  --san <span class="s2">&quot;*-</span><span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
+  --san <span class="s2">&quot;*.</span><span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
   --san <span class="s2">&quot;*-</span><span class="si">${</span><span class="nv">MINIKUBE_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
+  --san <span class="s2">&quot;</span><span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
   --san <span class="s2">&quot;</span><span class="si">${</span><span class="nv">MINIKUBE_IP</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
   --password-file <span class="nv">$TUTORIAL_HOME</span>/certs/password-file <span class="se">\</span>
-  <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.csr <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.key
+  <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.csr <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-key
 </code></pre></div>
-<p>If all goes well you should have the <code>gloo-demos.csr</code> and <code>gloo-demos.key</code> files in the <code>$TUTORIAL_HOME/certs</code> folder.</p>
+<p>If all goes well you should have the <code>gloo-demos.csr</code> and <code>gloo-demos-key</code> files in the <code>$TUTORIAL_HOME/certs</code> folder.</p>
 <h2 id="create-certificate-request">Create Certificate Request<a class="headerlink" href="#create-certificate-request" title="Permanent link">&para;</a></h2>
 <p>Having created the <abbr title="Certificate Signing Request">CSR</abbr> we are good to create the  cert-manager&rsquo;s <code>CertificateRequest</code>,</p>
 <p>As first step let us base64 encode the <code>gloo-demos</code> <abbr title="Certificate Signing Request">CSR</abbr>,</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_DEMOS_CSR</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.csr <span class="p">|</span> openssl base64 <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span> <span class="k">)</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_DEMOS_CSR</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.csr <span class="p">|</span> step base64 <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span> <span class="k">)</span>
 </code></pre></div>
 <p>Create the <code>CertificateRequest</code>,</p>
 <div class="highlight"><pre><span></span><code>envsubst&lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/ssl/certificate-request.yaml <span class="p">|</span> kubectl apply -f - 
 </code></pre></div>
 <p>Check the status of the <code>CertificateRequest</code>,</p>
-<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="o">{</span>MINIKUBE_IP<span class="o">}</span>.nip.io -o json <span class="p">|</span> jq <span class="s1">&#39;.status.conditions[]&#39;</span>
+<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq <span class="s1">&#39;.status.conditions[]&#39;</span>
 </code></pre></div>
 <p>If all went well you should see an output like,</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -588,16 +612,13 @@
 </code></pre></div>
 <p>Wait for the certificate to be updated in the request, you can check the same via,</p>
 <p>CA Certificate can be retrieved by,</p>
-<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">MINIKUBE_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.certificate&#39;</span> <span class="p">|</span> base64 -D &gt;<span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-ca.crt
+<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.ca&#39;</span> <span class="p">|</span> step base64 -d &gt;<span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-ca.crt
 </code></pre></div>
 <p>TLS Certificate can be retrieved by,</p>
-<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">MINIKUBE_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.certificate&#39;</span> <span class="p">|</span> base64 -D &gt; <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.crt
+<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.certificate&#39;</span> <span class="p">|</span> step base64 -d &gt; <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.crt
 </code></pre></div>
 <h2 id="verify-certificates">Verify Certificates<a class="headerlink" href="#verify-certificates" title="Permanent link">&para;</a></h2>
-<p>Get the root CA bundle,</p>
-<div class="highlight"><pre><span></span><code>kubectl get -n step-certificates-system -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data[&#39;root_ca\.crt&#39;]}&quot;</span> configmaps/step-certificates-certs  &gt; <span class="nv">$TUTORIAL_HOME</span>/certs/root_ca.crt
-</code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="k">if</span> step certificate verify <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.crt --roots <span class="nv">$TUTORIAL_HOME</span>/certs/root_ca.crt --host<span class="o">=</span><span class="nv">$MINIKUBE_IP</span>.nxp.io <span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> step certificate verify <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.crt --roots <span class="nv">$TUTORIAL_HOME</span>/certs/root_ca.crt --host<span class="o">=</span><span class="nv">$GLOO_GATEWAY_PROXY_IP</span>.nip.io <span class="p">;</span>
 <span class="k">then</span>
   <span class="nb">echo</span> <span class="s1">&#39;Verification succeeded!&#39;</span>
 <span class="k">else</span>
@@ -608,18 +629,33 @@
 <h2 id="create-ssl-secret">Create <abbr title="Secure Sockets Layer">SSL</abbr> Secret<a class="headerlink" href="#create-ssl-secret" title="Permanent link">&para;</a></h2>
 <p>To be able to encrypt the traffic via Gloo Gateway, we need to configure the TLS certicates. The TLS certficate is configured using Kubernetes Secret.</p>
 <p>Decrypt the private key that we used to create the Certificate Signing Request,</p>
-<div class="highlight"><pre><span></span><code>step certificate key <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.key --out<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-key.pem
+<div class="highlight"><pre><span></span><code>step certificate key <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-key --out<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.key
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The command out put says its public key, but its actually decrypted private key</p>
+</div>
 <p>Let us create a Kubernetes secret that we will use later to configure the TLS for Gloo Virtual Service,</p>
-<div class="highlight"><pre><span></span><code>glooctl create secret tls <span class="nv">$MINIKUBE_IP</span>.nip.io-tls <span class="se">\</span>
+<div class="highlight"><pre><span></span><code>glooctl create secret tls <span class="nv">$GLOO_GATEWAY_PROXY_IP</span>.nip.io-tls <span class="se">\</span>
   --certchain <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.crt <span class="se">\</span>
-  --privatekey<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-key.pem 
+  --privatekey<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.key <span class="se">\</span>
+  --rootca<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/root_ca.crt
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>+---------------------------+------+
+|          SECRET           | TYPE |
++---------------------------+------+
+| 192.168.64.200.nip.io-tls | TLS  |
++---------------------------+------+
+</code></pre></div>
+<p>You can check the contents of the secret using,</p>
+<div class="highlight"><pre><span></span><code>kubectl get secrets -n gloo-system <span class="nv">$GLOO_GATEWAY_PROXY_IP</span>.nip.io-tls -o json <span class="se">\</span>
+  <span class="p">|</span> jq -r <span class="s1">&#39;.data.tls&#39;</span> <span class="se">\</span>
+  <span class="p">|</span> step base64 -d
 </code></pre></div>
 <h2 id="gloo-proxy-urls">Gloo Proxy URLS<a class="headerlink" href="#gloo-proxy-urls" title="Permanent link">&para;</a></h2>
 <p>Get the Gloo proxy URLs,</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_HTTPS_PROXY_URL</span><span class="o">=</span><span class="k">$(</span>glooctl proxy url --local-cluster-name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROFILE_NAME</span><span class="s2">&quot;</span> <span class="se">\</span>
-  --port<span class="o">=</span>https<span class="k">)</span>
-<span class="nb">export</span> <span class="nv">GLOO_HTTP_PROXY_URL</span><span class="o">=</span><span class="k">$(</span>glooctl proxy url --local-cluster-name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROFILE_NAME</span><span class="s2">&quot;</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_HTTPS_PROXY_URL</span><span class="o">=</span><span class="s2">&quot;https://</span><span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span>
+<span class="nb">export</span> <span class="nv">GLOO_HTTP_PROXY_URL</span><span class="o">=</span><span class="s2">&quot;http://</span><span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span>
 </code></pre></div>
 <h2 id="encrypt-fruits-api-route">Encrypt Fruits API Route<a class="headerlink" href="#encrypt-fruits-api-route" title="Permanent link">&para;</a></h2>
 <p>As we have all the infrastructure ready to encrypt the traffic let us now configure the <code>fruits-api</code> Virtual Service to encrypt the traffic with our certificates.</p>
@@ -634,11 +670,11 @@
   <span class="nt">displayName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FruitsAPI</span>
 <span class="hll">  <span class="nt">sslConfig</span><span class="p">:</span>
 </span><span class="hll">    <span class="nt">secretRef</span><span class="p">:</span>
-</span><span class="hll">      <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;${MINIKUBE_IP}.nip.io-tls&quot;</span>
+</span><span class="hll">      <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;${GLOO_GATEWAY_PROXY_IP}.nip.io-tls&quot;</span>
 </span><span class="hll">      <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gloo-system</span>
 </span><span class="hll">  <span class="nt">virtualHost</span><span class="p">:</span>
 </span>    <span class="nt">domains</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="s">&quot;${MINIKUBE_IP}.nip.io&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;${GLOO_GATEWAY_PROXY_IP}.nip.io&quot;</span>
     <span class="nt">routes</span><span class="p">:</span>
       <span class="c1"># Application Routes</span>
       <span class="c1"># ------------</span>
@@ -657,19 +693,18 @@
   <span class="p">|</span> kubectl apply -f - 
 </code></pre></div>
 <p>Let us check the service,</p>
-<div class="highlight"><pre><span></span><code>http --verify<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-ca.crt <span class="s2">&quot;</span><span class="nv">$GLOO_HTTPS_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span> <span class="s2">&quot;Host:</span><span class="nv">$MINIKUBE_IP</span><span class="s2">.nip.io&quot;</span>
+<div class="highlight"><pre><span></span><code>http --verify<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-ca.crt <span class="s2">&quot;</span><span class="nv">$GLOO_HTTPS_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span>
 </code></pre></div>
 <p>Even though we specifed the CA the call fails with the following error,</p>
-<div class="highlight"><pre><span></span><code>http: error: SSLError: HTTPSConnectionPool(host=&#39;192.168.64.12&#39;, port=30443): Max retries exceeded with url: /api/fruits/ (Caused by SSLError(SSLError(1, &#39;<mark class="critic"> [SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 alert certificate required </mark>(_ssl.c:2633)&#39;))) while doing a GET request to URL: https://192.168.64.12:30443/api/fruits/
+<div class="highlight"><pre><span></span><code>http: error: SSLError: HTTPSConnectionPool(host=&#39;192.168.64.200.nip.io&#39;, port=443): Max retries exceeded with url: /api/fruits/ <mark class="critic"> (Caused by SSLError(SSLError(1, &#39;[SSL: TLSV13_ALERT_CERTIFICATE_REQUIRED] tlsv13 alert certificate required </mark> (_ssl.c:2633)&#39;))) while doing a GET request to URL: https://192.168.64.200.nip.io/api/fruits/
 </code></pre></div>
-<p>The error means we need supply the client certificate and key as part of the request,</p>
-<p>By default Envoy Proxy does enable <a href="https://www.envoyproxy.io/docs/envoy/latest/start/quick-start/securing" target="_blank"><abbr title="Mutual Transport Layer Security">mTLS</abbr></a> when the Kubernetes secret has <code>ca.crt</code>. Since we not called it with client certificates the call fails with the error,</p>
+<p>The error means we need supply the client certificate and key as part of the request.By default Envoy Proxy does enable <a href="https://www.envoyproxy.io/docs/envoy/latest/start/quick-start/securing" target="_blank"><abbr title="Mutual Transport Layer Security">mTLS</abbr></a> when the Kubernetes secret has <code>ca.crt</code>. Since we not called it with client certificates the call fails with the error,</p>
 <p>Now let us add the client certificates and do the call again,</p>
 <div class="highlight"><pre><span></span><code>http <span class="se">\</span>
  <mark class="critic"> --verify<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$TUTORIAL_HOME</span><span class="s2">/certs/gloo-demos-ca.crt&quot;</span> </mark><span class="se">\</span>
  <mark class="critic"> --cert<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$TUTORIAL_HOME</span><span class="s2">/certs/gloo-demos.crt&quot;</span> </mark><span class="se">\</span>
- <mark class="critic"> --cert-key<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$TUTORIAL_HOME</span><span class="s2">/certs/gloo-demos-key.pem&quot;</span> </mark><span class="se">\</span>
-  <span class="s2">&quot;</span><span class="nv">$GLOO_HTTPS_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span> <span class="s2">&quot;Host:</span><span class="nv">$MINIKUBE_IP</span><span class="s2">.nip.io&quot;</span>
+ <mark class="critic"> --cert-key<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$TUTORIAL_HOME</span><span class="s2">/certs/gloo-demos.key&quot;</span> </mark><span class="se">\</span>
+  <span class="s2">&quot;</span><span class="nv">$GLOO_HTTPS_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span>
 </code></pre></div>
 <p>The call is now sucessful returning the list of fruits,</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
@@ -689,15 +724,15 @@
 <p>When we created the <a href="#create-certificate-request">signing request</a> we created it to be used for both client/server auth. When in production its recommended to have seperate client and server certificates.</p>
 </div>
 <p>Let us verify the service over http,</p>
-<div class="highlight"><pre><span></span><code>http <span class="s2">&quot;</span><span class="nv">$GLOO_HTTP_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span> <span class="s2">&quot;Host:</span><span class="nv">$MINIKUBE_IP</span><span class="s2">.nip.io&quot;</span>
+<div class="highlight"><pre><span></span><code>http <span class="s2">&quot;</span><span class="nv">$GLOO_HTTP_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span>
 </code></pre></div>
 <p>Throws an error like,</p>
-<div class="highlight"><pre><span></span><code>http: error: ConnectionError: HTTPConnectionPool<span class="o">(</span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;192.168.64.12&#39;</span>, <span class="nv">port</span><span class="o">=</span><span class="m">30080</span><span class="o">)</span>: Max retries exceeded with url: /api/fruits/ <span class="o">(</span>Caused by NewConnectionError<span class="o">(</span><span class="s1">&#39;&lt;urllib3.connection.HTTPConnection object at 0x1066cda60&gt;: Failed to establish a new connection: [Errno 61] Connection refused&#39;</span><span class="o">))</span> <span class="k">while</span> doing a GET request to URL: http://192.168.64.12:30080/api/fruits/
+<div class="highlight"><pre><span></span><code>http: error: ConnectionError: HTTPConnectionPool<span class="o">(</span><span class="nv">host</span><span class="o">=</span><span class="s1">&#39;192.168.64.200.nip.io&#39;</span>, <span class="nv">port</span><span class="o">=</span><span class="m">80</span><span class="o">)</span>: Max retries exceeded with url: /api/fruits/ <span class="o">(</span>Caused by NewConnectionError<span class="o">(</span><span class="s1">&#39;&lt;urllib3.connection.HTTPConnection object at 0x1027dcb20&gt;: Failed to establish a new connection: [Errno 61] Connection refused&#39;</span><span class="o">))</span> <span class="k">while</span> doing a GET request to URL: http://192.168.64.200.nip.io/api/fruits/
 </code></pre></div>
 <h3 id="one-way-tls">One Way TLS<a class="headerlink" href="#one-way-tls" title="Permanent link">&para;</a></h3>
 <p>In some use cases we are fine with one-way TLS i.e its enough the client can verify the server identity. As we learnt in the previous section that Gloo by default enables <abbr title="Mutual Transport Layer Security">mTLS</abbr> when the sslConfig secret has CA certificate in it.</p>
 <p>You can check the same using the command,</p>
-<div class="highlight"><pre><span></span><code>kubectl get secrets -n gloo-system <span class="s2">&quot;</span><span class="nv">$MINIKUBE_IP</span><span class="s2">.nip.io-tls&quot;</span> -o json <span class="p">|</span> jq -r <span class="s1">&#39;.data.tls&#39;</span> <span class="p">|</span> step base64 -d
+<div class="highlight"><pre><span></span><code>kubectl get secrets -n gloo-system <span class="s2">&quot;</span><span class="nv">$GLOO_GATEWAY_PROXY_IP</span><span class="s2">.nip.io-tls&quot;</span> -o json <span class="p">|</span> jq -r <span class="s1">&#39;.data.tls&#39;</span> <span class="p">|</span> step base64 -d
 </code></pre></div>
 <p>The outout of the command should have a key with name <code>rootCa</code>.</p>
 <p>To make the service as one-way TLS we need to enable the <code>oneWayTls</code> flag in the sslConfig of the Virtual Service as shown,</p>
@@ -711,11 +746,11 @@
   <span class="nt">sslConfig</span><span class="p">:</span>
     <span class="l l-Scalar l-Scalar-Plain"><mark class="critic"> oneWayTls</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain"></mark> <mark class="critic"> true </mark></span>
     <span class="nt">secretRef</span><span class="p">:</span>
-      <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;${MINIKUBE_IP}.nip.io-tls&quot;</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;${GLOO_GATEWAY_PROXY_IP}.nip.io-tls&quot;</span>
       <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gloo-system</span>
   <span class="nt">virtualHost</span><span class="p">:</span>
     <span class="nt">domains</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="s">&quot;${MINIKUBE_IP}.nip.io&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="s">&quot;${GLOO_GATEWAY_PROXY_IP}.nip.io&quot;</span>
     <span class="nt">routes</span><span class="p">:</span>
       <span class="c1"># Application Routes</span>
       <span class="c1"># ------------</span>
@@ -734,7 +769,7 @@
   <span class="p">|</span> kubectl apply -f - 
 </code></pre></div>
 <p>Let us check the service over <abbr title="Secure Sockets Layer">SSL</abbr>,</p>
-<div class="highlight"><pre><span></span><code>http --verify<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-ca.crt <span class="s2">&quot;</span><span class="nv">$GLOO_HTTPS_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span> <span class="s2">&quot;Host:</span><span class="nv">$MINIKUBE_IP</span><span class="s2">.nip.io&quot;</span>
+<div class="highlight"><pre><span></span><code>http --verify<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-ca.crt <span class="s2">&quot;</span><span class="nv">$GLOO_HTTPS_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span>
 </code></pre></div>
 <p>Returns a list of fruits,</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
@@ -750,9 +785,14 @@
 <span class="p">]</span>
 </code></pre></div>
 <p>As you saw now the service returned successfully with us just passing the CA alone, we can even skip passing CA by setting the <code>--verify=no</code> to the http call,</p>
-<div class="highlight"><pre><span></span><code>http --verify<span class="o">=</span>no <span class="s2">&quot;</span><span class="nv">$GLOO_HTTPS_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span> <span class="s2">&quot;Host:</span><span class="nv">$MINIKUBE_IP</span><span class="s2">.nip.io&quot;</span>
+<div class="highlight"><pre><span></span><code>http --verify<span class="o">=</span>no <span class="s2">&quot;</span><span class="nv">$GLOO_HTTPS_PROXY_URL</span><span class="s2">/api/fruits/&quot;</span>
 </code></pre></div>
 <p>As we have seen now to encrypt the traffic, in the next module we will see how to enable authentication.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For you work with with these urls over Web Browser you need to install the certificates in system/browser truststore. Check <code>step certificate install --help</code> for more information.</p>
+</div>
+<p>With us now successfully enabled and checked <abbr title="Mutual Transport Layer Security">mTLS</abbr> and one way TLS, let us see how to enable oAuth to access control our API.</p>
 <div class="footnote">
 <hr />
 <ol>

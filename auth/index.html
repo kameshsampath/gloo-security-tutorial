@@ -207,8 +207,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-certificates/" class="md-nav__link">
-        CA and Issuer
+      <a href="../setup/" class="md-nav__link">
+        Setup
       </a>
     </li>
   
@@ -222,8 +222,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../setup/" class="md-nav__link">
-        Setup
+      <a href="../step-certificates/" class="md-nav__link">
+        CA and Issuer
       </a>
     </li>
   
@@ -528,22 +528,17 @@
 <h2 id="ensure-enviroment">Ensure Enviroment<a class="headerlink" href="#ensure-enviroment" title="Permanent link">&para;</a></h2>
 <p>We will use the following variables as part of this module,</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MINIKUBE_IP</span><span class="o">=</span><span class="k">$(</span>minikube -p <span class="nv">$PROFILE_NAME</span> ip<span class="k">)</span>
-<span class="nb">export</span> <span class="nv">GH_OAUTH_CLIENT_ID</span><span class="o">=</span>&lt;your github oauth client id&gt; <span class="c1"># (1)</span>
-<span class="nb">export</span> <span class="nv">GH_OAUTH_CLIENT_SECRET</span><span class="o">=</span>&lt;your github oauth client secret&gt; <span class="c1"># (2)</span>
-<span class="nb">export</span> <span class="nv">GH_OAUTH_ORG</span><span class="o">=</span>&lt;the github org to use&gt; <span class="c1"># (3)</span>
+<span class="nb">export</span> <span class="nv">GH_OAUTH_CLIENT_ID</span><span class="o">=</span>&lt;your github oauth client id&gt;
+<span class="nb">export</span> <span class="nv">GH_OAUTH_CLIENT_SECRET</span><span class="o">=</span>&lt;your github oauth client secret&gt;
+<span class="nb">export</span> <span class="nv">GH_OAUTH_ORG</span><span class="o">=</span>&lt;the github org to use&gt;
 </code></pre></div>
-<ol>
-<li>The GitHub oAuth Client Id</li>
-<li>The GitHub oAuth Client secret corresponding to client id</li>
-<li>The GitHub org or team to restrict the acess</li>
-</ol>
 <h2 id="create-github-secret-env-file">Create Github Secret Env file<a class="headerlink" href="#create-github-secret-env-file" title="Permanent link">&para;</a></h2>
 <p>Copy the template to env file,</p>
 <div class="highlight"><pre><span></span><code>cp <span class="nv">$TUTORIAL_HOME</span>/cluster/dex/github.env.secret.template <span class="nv">$TUTORIAL_HOME</span>/cluster/dex/github.env.secret
 </code></pre></div>
 <p>Update the <code>$TUTORIAL_HOME/cluster/dex/github.env.secret</code> values to map to your environment.</p>
 <h2 id="deploy-dex">Deploy Dex<a class="headerlink" href="#deploy-dex" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>kustomize build <span class="nv">$TUTORIAL_HOME</span>/cluster/dex <span class="p">|</span> envsubst <span class="p">|</span> kubectl apply -f - 
+<div class="highlight"><pre><span></span><code>kustomize build --load-restrictor<span class="o">=</span><span class="s1">&#39;LoadRestrictionsNone&#39;</span> <span class="nv">$TUTORIAL_HOME</span>/cluster/dex <span class="p">|</span> envsubst <span class="p">|</span> kubectl apply -f - 
 </code></pre></div>
 <p>Wait for the dex deployment to be up and running</p>
 <div class="highlight"><pre><span></span><code>kubectl rollout status -n dex deploy/dex --timeout<span class="o">=</span>60s
@@ -553,7 +548,7 @@
 <div class="highlight"><pre><span></span><code><span class="nt">staticClients</span><span class="p">:</span>
 <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fruits-app</span>
   <span class="nt">redirectURIs</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="s">&#39;http://$MINIKUBE_IP:30080/callback&#39;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&#39;https://$MINIKUBE_IP:30443/callback&#39;</span>
   <span class="nt">name</span><span class="p">:</span> <span class="s">&#39;Fruits</span><span class="nv"> </span><span class="s">App&#39;</span>
   <span class="c1"># value is fruits-app-secret</span>
 <span class="hll"><span class=" -Error"> </span><span class="nt">secret</span><span class="p">:</span> <span class="s">&quot;nJ1aXRzLWFwcC1zZWNyZXQ=&quot;</span>

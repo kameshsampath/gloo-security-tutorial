@@ -239,6 +239,19 @@
     Kubernetes Cluster Setup
   </a>
   
+    <nav class="md-nav" aria-label="Kubernetes Cluster Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metallb" class="md-nav__link">
+    Metallb
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -257,8 +270,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-certificates/" class="md-nav__link">
-        CA and Issuer
+      <a href="../setup/" class="md-nav__link">
+        Setup
       </a>
     </li>
   
@@ -272,8 +285,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../setup/" class="md-nav__link">
-        Setup
+      <a href="../step-certificates/" class="md-nav__link">
+        CA and Issuer
       </a>
     </li>
   
@@ -438,6 +451,19 @@
     Kubernetes Cluster Setup
   </a>
   
+    <nav class="md-nav" aria-label="Kubernetes Cluster Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metallb" class="md-nav__link">
+    Metallb
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -528,6 +554,27 @@
 <p>As part of this tutorial we will use minikube as our target cluster. To create the minikube cluster run the following command,</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$TUTORIAL_HOME</span>/bin/start-minikube.sh
 </code></pre></div>
+<h3 id="metallb">Metallb<a class="headerlink" href="#metallb" title="Permanent link">&para;</a></h3>
+<p>As we will need to access the Gloo Gateway proxy on the host, we will use <a href="https://metallb.universe.tf">metallb</a> addon to minikube.</p>
+<p>Enable the metallb addon by running,</p>
+<div class="highlight"><pre><span></span><code>minikube -p<span class="nv">$PROFILE_NAME</span> addons <span class="nb">enable</span> metallb
+</code></pre></div>
+<p>Wait for the metallb deployment to be ready,</p>
+<div class="highlight"><pre><span></span><code>kubectl rollout status -n metallb-system deploy/controller --timeout<span class="o">=</span>60s
+</code></pre></div>
+<p>Get the minikube IP by running the command,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MINIKUBE_IP</span><span class="o">=</span><span class="k">$(</span>minikube -p<span class="nv">$PROFILE_NAME</span> ip<span class="k">)</span>
+<span class="nb">echo</span> <span class="nv">$MINIKUBE_IP</span>
+</code></pre></div>
+<p>Once the addon is enabled run the following command to configure the LoadBalancer IP range,</p>
+<div class="highlight"><pre><span></span><code>minikube -p <span class="nv">$PROFILE_NAME</span> addons configure metallb
+</code></pre></div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Ensure that the <strong>Enter Load Balancer Start IP</strong> and <strong>Enter Load Balancer End IP</strong> is in the same subnet of <code>$MINIKUBE_IP</code>.
+For an example if <code>$MINIKUBE_IP</code> is <code>192.168.64.20</code>, the set the <code>Enter Load Balancer Start IP</code> to be something like <code>192.168.64.200</code> and <code>Enter Load Balancer End IP</code> to be something like <code>192.168.64.250</code>, that will give enough slack for you to create new minikube clusters without any ip clash.</p>
+</div>
+<p>Once you have setup minikube you are all set to move to next chapter to setup the certificate authority.</p>
                 
                   
                 
@@ -565,13 +612,13 @@
       
       
         
-        <a href="../step-certificates/" class="md-footer__link md-footer__link--next" aria-label="Next: CA and Issuer" rel="next">
+        <a href="../setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Setup" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              CA and Issuer
+              Setup
             </div>
           </div>
           <div class="md-footer__button md-icon">
