@@ -4,4 +4,3 @@ data:
 kind: Secret
 metadata:
   name: trusted-ca
-  namespace: gloo-system

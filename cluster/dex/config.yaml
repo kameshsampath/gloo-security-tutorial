@@ -1,4 +1,4 @@
-issuer: https://dex-${MINIKUBE_IP}.nip.io:32000
+issuer: https://${DEX_SERVER_IP}.nip.io
 storage:
   type: kubernetes
   config:
@@ -7,24 +7,25 @@ web:
   https: 0.0.0.0:5556
   tlsCert: /etc/dex/tls/tls.crt
   tlsKey: /etc/dex/tls/tls.key
-connectors:
-- type: github
-  id: github
-  name: GitHub
-  config:
-    clientID: $GH_OAUTH_CLIENT_ID
-    clientSecret: $GH_OAUTH_CLIENT_SECRET
-    redirectURI: https://dex-${MINIKUBE_IP}.nip.io:32000/callback
-    org: $GITHUB_ORG
-oauth2:
-  skipApprovalScreen: false
+# TODO enable later
+# connectors:
+# - type: github
+#   id: github
+#   name: GitHub
+#   config:
+#     clientID: $GH_OAUTH_CLIENT_ID
+#     clientSecret: $GH_OAUTH_CLIENT_SECRET
+#     redirectURI: https://${DEX_SERVER_IP}.nip.io/callback
+#     org: $GITHUB_ORG
+# oauth2:
+#   skipApprovalScreen: false
 staticClients:
 - id: fruits-app
   redirectURIs:
-  - 'http://$MINIKUBE_IP.nip.io:30443/callback'
+  - 'https://${GLOO_GATEWAY_PROXY_IP}.nip.io/callback'
   name: 'Fruits App'
-  # value is fruits-app-secret
-  secret: nJ1aXRzLWFwcC1zZWNyZXQ=
+  # value is fruits-app-secret base64 encoded
+  secret: ZnJ1aXRzLWFwcC1zZWNyZXQK
 enablePasswordDB: true
 staticPasswords:
 - email: "admin@example.com"

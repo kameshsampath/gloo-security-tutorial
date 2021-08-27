@@ -158,7 +158,7 @@ We have now setup the Certifcate Authority and Issuer. We need to update the Glo
 Create a secret with our custom CA root certificate,
 
 ```shell
-envsubst < $TUTORIAL_HOME/cluster/gloo/trusted-ca.yaml | kubectl apply -f -
+envsubst < $TUTORIAL_HOME/cluster/gloo/trusted-ca.yaml | kubectl apply -n gloo-system -f -
 ```
 
 As we need to ensure that Gloo extauth uses our custom CA, we need to patch the Gloo' `extauth` deployment and inject our root CA.

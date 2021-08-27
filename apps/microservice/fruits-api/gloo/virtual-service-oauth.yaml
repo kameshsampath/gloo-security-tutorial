@@ -8,11 +8,11 @@ spec:
   sslConfig:
     oneWayTls: true
     secretRef:
-      name: "${MINIKUBE_IP}.nip.io-tls"
-      namespace: my-certs
+      name: "${GLOO_GATEWAY_PROXY_IP}.nip.io-tls"
+      namespace: gloo-system
   virtualHost:
     domains:
-      - "*"
+      - "${GLOO_GATEWAY_PROXY_IP}.nip.io"
     # oAuth Config
     options:
       extauth:

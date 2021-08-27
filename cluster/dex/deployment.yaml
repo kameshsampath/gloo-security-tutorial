@@ -16,6 +16,19 @@ spec:
         app: dex
     spec:
       serviceAccountName: dex # This is created below
+      initContainers:
+        - name: add-ca-cert
+          image: ghcr.io/dexidp/dex:v2.30.0
+          command: 
+            - "sh"
+          args: 
+            - "-c"
+            - "cp -r /etc/ssl/certs/* /certs; cat /etc/ssl/certs/ca-certificates.crt /ca-certs/ca.crt > /certs/ca-certificates.crt"
+          volumeMounts:
+            - name: "certs"
+              mountPath: "/certs"
+            - name: "ca-certs"
+              mountPath: "/ca-certs"
       containers:
       - image: ghcr.io/dexidp/dex:v2.30.0
         name: dex
@@ -28,9 +41,11 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /etc/dex/cfg
+          readOnly: true
         - name: tls
           mountPath: /etc/dex/tls
-
+        - name: certs
+          mountPath: /etc/ssl/certs
         env:
         - name: GITHUB_CLIENT_ID
           valueFrom:
@@ -49,6 +64,14 @@ spec:
             port: 5556
             scheme: HTTPS
       volumes:
+      - emptyDir: {}
+        name: certs
+      - name: ca-certs
+        secret:
+          secretName: trusted-ca
+          items:
+            - key: tls.crt
+              path: ca.crt
       - name: config
         configMap:
           name: dex
