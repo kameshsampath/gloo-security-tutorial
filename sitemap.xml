@@ -2,57 +2,67 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/auth/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/cors/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/deploy-app/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/encrypt/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/gloo-resources/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/pki/</loc>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/rate-limit/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/setup/</loc>
-         <lastmod>2021-08-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/step-certificates/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/tools-and-sources/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/troubleshooting/</loc>
+         <lastmod>2021-09-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/ui/</loc>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://kameshsampath.github.io/gloo-edge-security-tutorial/waf/</loc>
-         <lastmod>2021-08-27</lastmod>
+         <lastmod>2021-09-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

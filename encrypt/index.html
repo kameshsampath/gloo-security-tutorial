@@ -12,7 +12,7 @@
         <link rel="canonical" href="https://kameshsampath.github.io/gloo-edge-security-tutorial/encrypt/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.6">
     
     
       
@@ -20,7 +20,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.be71726b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.802231af.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -222,8 +222,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-certificates/" class="md-nav__link">
-        CA and Issuer
+      <a href="../pki/" class="md-nav__link">
+        Public Key Infrastructure
       </a>
     </li>
   
@@ -409,6 +409,30 @@
   
   
     <li class="md-nav__item">
+      <a href="../ui/" class="md-nav__link">
+        Application UI
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cors/" class="md-nav__link">
+        CORS
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../rate-limit/" class="md-nav__link">
         Rate Limit
       </a>
@@ -428,20 +452,23 @@
   
 
           
-            
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
   
   
   
     <li class="md-nav__item">
-      <a href="../cors/" class="md-nav__link">
-        CORS
+      <a href="../troubleshooting/" class="md-nav__link">
+        Troubleshooting
       </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -565,7 +592,7 @@
 <span class="nb">echo</span> <span class="s2">&quot;\nStepCA Password: </span><span class="si">${</span><span class="nv">STEP_CA_PASSWORD</span><span class="si">}</span><span class="s2"> \n&quot;</span>
 </code></pre></div>
 <h2 id="certifcate-request">Certifcate Request<a class="headerlink" href="#certifcate-request" title="Permanent link">&para;</a></h2>
-<p>As part of earlier <a href="../step-certificates/">chapter</a>, we have step our CA and <code>StepIssuer</code> that helps us to create <code>cert-manager</code> CertificateRequests to generate the certificates.</p>
+<p>As part of earlier <a href="../pki/">chapter</a>, we have step our CA and <code>StepIssuer</code> that helps us to create <code>cert-manager</code> CertificateRequests to generate the certificates.</p>
 <p>As first step of that we need to create a <abbr title="Certificate Signing Request">CSR</abbr>, we can use step cli to create the <abbr title="Certificate Signing Request">CSR</abbr>.</p>
 <p>Create a password file to that will be used to encrypt the keys, for the sake of this demo let use use our <code>$STEP_CA_PASSWORD</code> as our password to encrypt the keys,</p>
 <div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$STEP_CA_PASSWORD</span><span class="s2">&quot;</span> &gt; <span class="nv">$TUTORIAL_HOME</span>/certs/password-file
@@ -589,7 +616,7 @@
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_DEMOS_CSR</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.csr <span class="p">|</span> step base64 <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span> <span class="k">)</span>
 </code></pre></div>
 <p>Create the <code>CertificateRequest</code>,</p>
-<div class="highlight"><pre><span></span><code>envsubst&lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/ssl/certificate-request.yaml <span class="p">|</span> kubectl apply -f - 
+<div class="highlight"><pre><span></span><code>envsubst&lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/ssl/certificate-request.yaml <span class="p">|</span> kubectl create -f - 
 </code></pre></div>
 <p>Check the status of the <code>CertificateRequest</code>,</p>
 <div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq <span class="s1">&#39;.status.conditions[]&#39;</span>
@@ -618,12 +645,7 @@
 <div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">GLOO_GATEWAY_PROXY_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.certificate&#39;</span> <span class="p">|</span> step base64 -d &gt; <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.crt
 </code></pre></div>
 <h2 id="verify-certificates">Verify Certificates<a class="headerlink" href="#verify-certificates" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="k">if</span> step certificate verify <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.crt --roots <span class="nv">$TUTORIAL_HOME</span>/certs/root_ca.crt --host<span class="o">=</span><span class="nv">$GLOO_GATEWAY_PROXY_IP</span>.nip.io <span class="p">;</span>
-<span class="k">then</span>
-  <span class="nb">echo</span> <span class="s1">&#39;Verification succeeded!&#39;</span>
-<span class="k">else</span>
- <span class="nb">echo</span> <span class="s1">&#39;Verification failed!&#39;</span>
-<span class="k">fi</span>
+<div class="highlight"><pre><span></span><code><span class="nv">$TUTORIAL_HOME</span>/bin/verifyCerts.sh <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos.crt <span class="nv">$GLOO_GATEWAY_PROXY_IP</span>.nip.io
 </code></pre></div>
 <p>With <code>Verification succeeded!</code>, we are now all set to encrypt our gateway traffic.</p>
 <h2 id="create-ssl-secret">Create <abbr title="Secure Sockets Layer">SSL</abbr> Secret<a class="headerlink" href="#create-ssl-secret" title="Permanent link">&para;</a></h2>
@@ -876,7 +898,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tabs.link"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.56a63758.min.js"></script>
+      <script src="../assets/javascripts/bundle.756773cc.min.js"></script>
       
     
   </body>

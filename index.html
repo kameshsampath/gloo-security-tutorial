@@ -12,7 +12,7 @@
         <link rel="canonical" href="https://kameshsampath.github.io/gloo-edge-security-tutorial/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.6">
     
     
       
@@ -20,7 +20,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.be71726b.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.802231af.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.3f5d1f46.min.css">
@@ -61,11 +61,6 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
-      
-        
-        <a href="#gloo-edge-security-tutorial" class="md-skip">
-          Skip to content
-        </a>
       
     </div>
     <div data-md-component="announce">
@@ -183,8 +178,6 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
-        
-      
       
       <a href="." class="md-nav__link md-nav__link--active">
         Overview
@@ -232,8 +225,8 @@
   
   
     <li class="md-nav__item">
-      <a href="step-certificates/" class="md-nav__link">
-        CA and Issuer
+      <a href="pki/" class="md-nav__link">
+        Public Key Infrastructure
       </a>
     </li>
   
@@ -319,6 +312,30 @@
   
   
     <li class="md-nav__item">
+      <a href="ui/" class="md-nav__link">
+        Application UI
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cors/" class="md-nav__link">
+        CORS
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
       <a href="rate-limit/" class="md-nav__link">
         Rate Limit
       </a>
@@ -338,20 +355,23 @@
   
 
           
-            
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
   
   
   
     <li class="md-nav__item">
-      <a href="cors/" class="md-nav__link">
-        CORS
+      <a href="troubleshooting/" class="md-nav__link">
+        Troubleshooting
       </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -363,31 +383,15 @@
               </div>
             
             
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
               
                 
                 
-                <h1 id="gloo-edge-security-tutorial">Gloo Edge Security Tutorial<a class="headerlink" href="#gloo-edge-security-tutorial" title="Permanent link">&para;</a></h1>
-<p>As part of this short tutorial we will explore few security concepts that are required with every microservice deployment and how  <a href="https://www.solo.io/products/gloo-edge/">Gloo Edge</a> can help you to configure them easily and securely.</p>
+                  <h1>Overview</h1>
+                
+                <p>As part of this short tutorial we will explore few security concepts that are required with every microservice deployment and how  <a href="https://www.solo.io/products/gloo-edge/">Gloo Edge</a> can help you to configure them easily and securely.</p>
 <p>At the end of this short tutorial you would have learnt,</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Setup minikube cluster</li>
@@ -401,7 +405,7 @@
 </ul>
 </li>
 </ul>
-<p><img align="center" alt="Gloo Edge" src="images/blog_feature.png" /></p>
+<p><img align="center" alt="Gloo Edge" src="images/overview.png" /></p>
                 
                   
                 
@@ -462,7 +466,7 @@
     <script id="__config" type="application/json">{"base": ".", "features": ["content.code.annotate", "content.tabs.link"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.56a63758.min.js"></script>
+      <script src="assets/javascripts/bundle.756773cc.min.js"></script>
       
     
   </body>

@@ -9,18 +9,18 @@
       
       
       
-        <link rel="canonical" href="https://kameshsampath.github.io/gloo-edge-security-tutorial/step-certificates/">
+        <link rel="canonical" href="https://kameshsampath.github.io/gloo-edge-security-tutorial/pki/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.6">
     
     
       
-        <title>CA and Issuer - Gloo Edge Security Tutorial</title>
+        <title>Public Key Infrastructure - Gloo Edge Security Tutorial</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.be71726b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.802231af.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -93,7 +93,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CA and Issuer
+              Public Key Infrastructure
             
           </span>
         </div>
@@ -230,12 +230,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          CA and Issuer
+          Public Key Infrastructure
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        CA and Issuer
+        Public Key Infrastructure
       </a>
       
         
@@ -281,6 +281,13 @@
         <li class="md-nav__item">
   <a href="#deploy-step-certificates" class="md-nav__link">
     Deploy step-certificates
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-step-ca" class="md-nav__link">
+    Configure Step CA
   </a>
   
 </li>
@@ -394,6 +401,30 @@
   
   
     <li class="md-nav__item">
+      <a href="../ui/" class="md-nav__link">
+        Application UI
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cors/" class="md-nav__link">
+        CORS
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../rate-limit/" class="md-nav__link">
         Rate Limit
       </a>
@@ -413,20 +444,23 @@
   
 
           
-            
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
   
   
   
     <li class="md-nav__item">
-      <a href="../cors/" class="md-nav__link">
-        CORS
+      <a href="../troubleshooting/" class="md-nav__link">
+        Troubleshooting
       </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -490,6 +524,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#configure-step-ca" class="md-nav__link">
+    Configure Step CA
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#install-step-issuer" class="md-nav__link">
     Install Step Issuer
   </a>
@@ -523,7 +564,7 @@
               
                 
                 
-                  <h1>CA and Issuer</h1>
+                  <h1>Public Key Infrastructure</h1>
                 
                 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>As part of this tutorial we will use the <a href="https://smallstep.com">step</a> to automate the setup local private CA. We will then use this CA to issue the certificates that we will use with Gloo as part of the other module exercises.</p>
@@ -571,6 +612,22 @@ helm repo update
   -n step-certificates-system <span class="se">\</span>
   -f <span class="nv">$TUTORIAL_HOME</span>/cluster/step-ca/values.yaml <span class="se">\</span>
   --wait
+</code></pre></div>
+<h2 id="configure-step-ca">Configure Step CA<a class="headerlink" href="#configure-step-ca" title="Permanent link">&para;</a></h2>
+<p>By default the <code>step-ca</code> issues TLS certicates that are valid only for <strong>24 hours</strong>. For the tutorial purpose we will reconfigure it to be <strong>720 hours(30 days)</strong>. For more information on the step configuration check the <a href="https://smallstep.com/docs/step-ca/configuration">documentation</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="nv">CA_JSON</span><span class="o">=</span><span class="k">$(</span>kubectl get cm -n step-certificates-system step-certificates-config -o json <span class="p">|</span> jq -r <span class="s1">&#39;.data[&quot;ca.json&quot;]&#39;</span> <span class="p">|</span>  jq -c <span class="s1">&#39;.authority.claims += { &quot;maxTLSCertDuration&quot;: &quot;720h&quot; }&#39;</span> <span class="p">|</span> jq -Rs .<span class="k">)</span>
+</code></pre></div>
+<p>Update the <code>step-certificates-config</code>,</p>
+<div class="highlight"><pre><span></span><code>kubectl patch configmap/step-certificates-config <span class="se">\</span>
+  -n step-certificates-system  <span class="se">\</span>
+  --type merge <span class="se">\</span>
+  -p <span class="s2">&quot;{\&quot;data\&quot;:{\&quot;ca.json\&quot;: </span><span class="nv">$CA_JSON</span><span class="s2"> }}&quot;</span>
+</code></pre></div>
+<p>Lets restart the statefulset to make sure the updated configuration takes effect,</p>
+<div class="highlight"><pre><span></span><code>kubectl rollout restart  -n step-certificates-system statefulset/step-certificates 
+</code></pre></div>
+<p>Wait for the stateful set <code>step-certificates</code> to be up</p>
+<div class="highlight"><pre><span></span><code>kubectl rollout status -n step-certificates-system statefulset/step-certificates --timeout<span class="o">=</span>60s
 </code></pre></div>
 <h2 id="install-step-issuer">Install Step Issuer<a class="headerlink" href="#install-step-issuer" title="Permanent link">&para;</a></h2>
 <p>We will use <a href="https://github.com/smallstep/step-issuer">step-issuer</a> as way to automate the certificate requests.</p>
@@ -714,7 +771,7 @@ Exit Reason: &quot;Completed&quot;
     <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "content.tabs.link"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.56a63758.min.js"></script>
+      <script src="../assets/javascripts/bundle.756773cc.min.js"></script>
       
     
   </body>

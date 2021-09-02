@@ -9,14 +9,14 @@
       
       
       
-        <link rel="canonical" href="https://kameshsampath.github.io/gloo-edge-security-tutorial/auth/">
+        <link rel="canonical" href="https://kameshsampath.github.io/gloo-edge-security-tutorial/ui/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.6">
     
     
       
-        <title>Gloo Edge Authentication - Gloo Edge Security Tutorial</title>
+        <title>Application UI - Gloo Edge Security Tutorial</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#pre-requisties" class="md-skip">
+        <a href="#ensure-environment" class="md-skip">
           Skip to content
         </a>
       
@@ -93,7 +93,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Gloo Edge Authentication
+              Application UI
             
           </span>
         </div>
@@ -297,6 +297,18 @@
             
   
   
+  
+    <li class="md-nav__item">
+      <a href="../auth/" class="md-nav__link">
+        Authentication
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
     
   
   
@@ -307,12 +319,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Authentication
+          Application UI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Authentication
+        Application UI
       </a>
       
         
@@ -328,25 +340,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pre-requisties" class="md-nav__link">
-    Pre-requisties
+  <a href="#ensure-environment" class="md-nav__link">
+    Ensure environment
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#ensure-enviroment" class="md-nav__link">
-    Ensure Enviroment
+  <a href="#prepare-fruits-ui-deployment" class="md-nav__link">
+    Prepare Fruits UI Deployment
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prepare-dex-deployment" class="md-nav__link">
-    Prepare Dex Deployment
-  </a>
-  
-    <nav class="md-nav" aria-label="Prepare Dex Deployment">
+    <nav class="md-nav" aria-label="Prepare Fruits UI Deployment">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -357,29 +362,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-github-secret-env-file" class="md-nav__link">
-    Create Github Secret Env file
+  <a href="#fruits-ui-ssl-certificates" class="md-nav__link">
+    Fruits UI SSL Certificates
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#copy-trusted-ca-certificates" class="md-nav__link">
-    Copy Trusted CA certificates
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dex-ssl-certificates" class="md-nav__link">
-    Dex SSL Certificates
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-dex-csr" class="md-nav__link">
-    Create Dex CSR
+  <a href="#create-fruits-ui-csr" class="md-nav__link">
+    Create Fruits UI CSR
   </a>
   
 </li>
@@ -408,39 +399,31 @@
     Create SSL Secret
   </a>
   
+    <nav class="md-nav" aria-label="Create SSL Secret">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#created-trusted-ca-secret" class="md-nav__link">
+    Created Trusted CA Secret
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#deploy-dex" class="md-nav__link">
-    Deploy Dex
+  <a href="#scale-deployment-ui" class="md-nav__link">
+    Scale Deployment UI
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#create-gloo-oauth-secret" class="md-nav__link">
-    Create Gloo oAuth Secret
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#gloo-oauth-config" class="md-nav__link">
-    Gloo oAuth Config
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#update-virtual-service" class="md-nav__link">
-    Update Virtual Service
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#accessing-application" class="md-nav__link">
-    Accessing Application
+  <a href="#access-ui" class="md-nav__link">
+    Access UI
   </a>
   
 </li>
@@ -449,18 +432,6 @@
   
 </nav>
       
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ui/" class="md-nav__link">
-        Application UI
-      </a>
     </li>
   
 
@@ -546,25 +517,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pre-requisties" class="md-nav__link">
-    Pre-requisties
+  <a href="#ensure-environment" class="md-nav__link">
+    Ensure environment
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#ensure-enviroment" class="md-nav__link">
-    Ensure Enviroment
+  <a href="#prepare-fruits-ui-deployment" class="md-nav__link">
+    Prepare Fruits UI Deployment
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prepare-dex-deployment" class="md-nav__link">
-    Prepare Dex Deployment
-  </a>
-  
-    <nav class="md-nav" aria-label="Prepare Dex Deployment">
+    <nav class="md-nav" aria-label="Prepare Fruits UI Deployment">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -575,29 +539,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-github-secret-env-file" class="md-nav__link">
-    Create Github Secret Env file
+  <a href="#fruits-ui-ssl-certificates" class="md-nav__link">
+    Fruits UI SSL Certificates
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#copy-trusted-ca-certificates" class="md-nav__link">
-    Copy Trusted CA certificates
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dex-ssl-certificates" class="md-nav__link">
-    Dex SSL Certificates
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create-dex-csr" class="md-nav__link">
-    Create Dex CSR
+  <a href="#create-fruits-ui-csr" class="md-nav__link">
+    Create Fruits UI CSR
   </a>
   
 </li>
@@ -626,39 +576,31 @@
     Create SSL Secret
   </a>
   
+    <nav class="md-nav" aria-label="Create SSL Secret">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#created-trusted-ca-secret" class="md-nav__link">
+    Created Trusted CA Secret
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#deploy-dex" class="md-nav__link">
-    Deploy Dex
+  <a href="#scale-deployment-ui" class="md-nav__link">
+    Scale Deployment UI
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#create-gloo-oauth-secret" class="md-nav__link">
-    Create Gloo oAuth Secret
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#gloo-oauth-config" class="md-nav__link">
-    Gloo oAuth Config
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#update-virtual-service" class="md-nav__link">
-    Update Virtual Service
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#accessing-application" class="md-nav__link">
-    Accessing Application
+  <a href="#access-ui" class="md-nav__link">
+    Access UI
   </a>
   
 </li>
@@ -676,67 +618,58 @@
               
                 
                 
-                  <h1>Authentication</h1>
+                  <h1>Application UI</h1>
                 
-                <p>At the end of this chapter you would have known how to:</p>
+                <p>At the end of this chapter you would have:</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Deploy <a href="https://dexidp.io" target="_blank">dexidp</a></li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Configure authentication to Fruits API</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Create Certifiates for UI Application</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Deployed Fruits Application UI</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Configure Gloo Virtual Service</li>
 </ul>
-<h2 id="pre-requisties">Pre-requisties<a class="headerlink" href="#pre-requisties" title="Permanent link">&para;</a></h2>
-<p>We will be integrating GitHub via dexidp. For us to integrate dex with <a href="https://github.com/settings/applications/new">GithHub oAuth</a> you need to have oAuth app registered and have the follwing credentials handy,</p>
-<ul>
-<li>GitHub oAuth ClientId</li>
-<li>GitHub oAuth CientSecret</li>
-<li>GitHub Organisation to use</li>
-</ul>
-<h2 id="ensure-enviroment">Ensure Enviroment<a class="headerlink" href="#ensure-enviroment" title="Permanent link">&para;</a></h2>
-<p>We will use the following variables as part of this module,</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GH_OAUTH_CLIENT_ID</span><span class="o">=</span>&lt;your github oauth client id&gt;
-<span class="nb">export</span> <span class="nv">GH_OAUTH_CLIENT_SECRET</span><span class="o">=</span>&lt;your github oauth client secret&gt;
-<span class="nb">export</span> <span class="nv">GH_OAUTH_ORG</span><span class="o">=</span>&lt;the github org to use&gt;
+<h2 id="ensure-environment">Ensure environment<a class="headerlink" href="#ensure-environment" title="Permanent link">&para;</a></h2>
+<p>Lets ensure that we have all the required environment variables set for this module,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="s2">&quot;\n Tutorial Home: </span><span class="nv">$TUTORIAL_HOME</span><span class="s2"> \n&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;\n Gloo Gateway Proxy IP: </span><span class="nv">$GLOO_GATEWAY_PROXY_IP</span><span class="s2"> \n&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;\n Gloo Proxy HTTP URL: </span><span class="nv">$GLOO_PROXY_HTTP_URL</span><span class="s2"> \n&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;\n Gloo Proxy HTTP URL: </span><span class="nv">$GLOO_PROXY_HTTPS_URL</span><span class="s2"> \n&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;\n ROOT CA Cert: </span><span class="nv">$ROOT_CA_CERT</span><span class="s2"> \n&quot;</span>
 </code></pre></div>
-<h2 id="prepare-dex-deployment">Prepare Dex Deployment<a class="headerlink" href="#prepare-dex-deployment" title="Permanent link">&para;</a></h2>
+<h2 id="prepare-fruits-ui-deployment">Prepare Fruits UI Deployment<a class="headerlink" href="#prepare-fruits-ui-deployment" title="Permanent link">&para;</a></h2>
 <h3 id="create-namespace">Create Namespace<a class="headerlink" href="#create-namespace" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>kubectl apply -f  <span class="nv">$TUTORIAL_HOME</span>/cluster/dex/namespace.yaml
+<div class="highlight"><pre><span></span><code>kubectl create ns ui
 </code></pre></div>
-<h3 id="create-github-secret-env-file">Create Github Secret Env file<a class="headerlink" href="#create-github-secret-env-file" title="Permanent link">&para;</a></h3>
-<p><mark class="critic"> TODO Check </mark>
-Copy the template to env file,</p>
-<div class="highlight"><pre><span></span><code>cp <span class="nv">$TUTORIAL_HOME</span>/cluster/dex/github.env.secret.template <span class="nv">$TUTORIAL_HOME</span>/cluster/dex/github.env.secret
+<h3 id="fruits-ui-ssl-certificates">Fruits UI SSL Certificates<a class="headerlink" href="#fruits-ui-ssl-certificates" title="Permanent link">&para;</a></h3>
+<p>To create the Fruits UI SSL certificate, we need to know the Fruits UI service LoadBalancer IP. To get the LB IP let us create the Fruits UI service,</p>
+<div class="highlight"><pre><span></span><code>kustomize build <span class="nv">$TUTORIAL_HOME</span>/apps/microservice/ui/overlays/minikube <span class="p">|</span> envsubst <span class="p">|</span> kubectl apply -f -
 </code></pre></div>
-<p>Update the <code>$TUTORIAL_HOME/cluster/dex/github.env.secret</code> values to map to your environment.</p>
-<h3 id="copy-trusted-ca-certificates">Copy Trusted CA certificates<a class="headerlink" href="#copy-trusted-ca-certificates" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/trusted-ca.yaml <span class="p">|</span> kubectl apply -n dex -f -
+<p>Get the Fruits UI LoadBalancer IP,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">FRUITS_UI_IP</span><span class="o">=</span><span class="k">$(</span>kubectl get svc -n ui fruits-app-ui -ojson <span class="p">|</span> jq -r <span class="s1">&#39;.status.loadBalancer.ingress[0].ip&#39;</span><span class="k">)</span>
 </code></pre></div>
-<h3 id="dex-ssl-certificates">Dex <abbr title="Secure Sockets Layer">SSL</abbr> Certificates<a class="headerlink" href="#dex-ssl-certificates" title="Permanent link">&para;</a></h3>
-<p>To create the Dex <abbr title="Secure Sockets Layer">SSL</abbr> certificate, we need to know the dex service LoadBalancer IP. To get the LB IP let us create the dex service,</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -n dex -f <span class="nv">$TUTORIAL_HOME</span>/cluster/dex/service.yaml
-</code></pre></div>
-<p>Get the dex LoadBalancer IP,</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">DEX_SERVER_IP</span><span class="o">=</span><span class="k">$(</span>kubectl get svc -n dex dex -ojson <span class="p">|</span> jq -r <span class="s1">&#39;.status.loadBalancer.ingress[0].ip&#39;</span><span class="k">)</span>
-</code></pre></div>
-<h3 id="create-dex-csr">Create Dex <abbr title="Certificate Signing Request">CSR</abbr><a class="headerlink" href="#create-dex-csr" title="Permanent link">&para;</a></h3>
-<p>Let us create the <abbr title="Certificate Signing Request">CSR</abbr> and keys,</p>
-<div class="highlight"><pre><span></span><code>step certificate create gloo-demos-dex --csr <span class="se">\</span>
-  --san <span class="s2">&quot;</span><span class="si">${</span><span class="nv">DEX_SERVER_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
-  --san <span class="s2">&quot;*-</span><span class="si">${</span><span class="nv">DEX_SERVER_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
-  --san <span class="s2">&quot;*.</span><span class="si">${</span><span class="nv">DEX_SERVER_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
-  --san <span class="s2">&quot;</span><span class="si">${</span><span class="nv">DEX_SERVER_IP</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As you would have observed the deployment <code>fruits-app-ui</code> is not up as we have set the replicas to <code>0</code>. We will scale the application once we have certificates ready to be used.</p>
+</div>
+<h3 id="create-fruits-ui-csr">Create Fruits UI CSR<a class="headerlink" href="#create-fruits-ui-csr" title="Permanent link">&para;</a></h3>
+<p>Let us create the CSR and keys,</p>
+<div class="highlight"><pre><span></span><code>step certificate create fruits-ui --csr <span class="se">\</span>
+  --san <span class="s2">&quot;</span><span class="si">${</span><span class="nv">FRUITS_UI_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
+  --san <span class="s2">&quot;*-</span><span class="si">${</span><span class="nv">FRUITS_UI_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
+  --san <span class="s2">&quot;*.</span><span class="si">${</span><span class="nv">FRUITS_UI_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span> <span class="se">\</span>
+  --san <span class="s2">&quot;</span><span class="si">${</span><span class="nv">FRUITS_UI_IP</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
   --password-file <span class="nv">$TUTORIAL_HOME</span>/certs/password-file <span class="se">\</span>
-  <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex.csr <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex-key
+  <span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui.csr <span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui-key
 </code></pre></div>
-<p>If all goes well you should have the <code>gloo-demos-dex.csr</code> and <code>gloo-demos-dex-key</code> files in the <code>$TUTORIAL_HOME/certs</code> folder.</p>
+<p>If all goes well you should have the <code>fruits-ui.csr</code> and <code>fruits-ui-key</code> files in the <code>$TUTORIAL_HOME/certs</code> folder.</p>
 <h2 id="create-certificate-request">Create Certificate Request<a class="headerlink" href="#create-certificate-request" title="Permanent link">&para;</a></h2>
-<p>Having created the <abbr title="Certificate Signing Request">CSR</abbr> we are good to create the  cert-manager&rsquo;s <code>CertificateRequest</code>,</p>
-<p>As first step let us base64 encode the <code>gloo-demos-dex</code> <abbr title="Certificate Signing Request">CSR</abbr>,</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GLOO_DEMOS_DEX_CSR</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex.csr <span class="p">|</span> step base64 <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span> <span class="k">)</span>
+<p>Having created the CSR we are good to create the  cert-manager&rsquo;s <code>CertificateRequest</code>,</p>
+<p>As first step let us base64 encode the <code>fruits-ui</code> CSR,</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">FRUITS_UI_CSR</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui.csr <span class="p">|</span> step base64 <span class="p">|</span> tr -d <span class="s1">&#39;\n&#39;</span> <span class="k">)</span>
 </code></pre></div>
 <p>Create the <code>CertificateRequest</code>,</p>
-<div class="highlight"><pre><span></span><code>envsubst&lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/dex/certificate-request.yaml <span class="p">|</span> kubectl create -f - 
+<div class="highlight"><pre><span></span><code>envsubst&lt; <span class="nv">$TUTORIAL_HOME</span>/apps/microservice/ui/certificate-request.yaml <span class="p">|</span> kubectl create -f - 
 </code></pre></div>
 <p>Check the status of the <code>CertificateRequest</code>,</p>
-<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">DEX_SERVER_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq <span class="s1">&#39;.status.conditions[]&#39;</span>
+<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">FRUITS_UI_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq <span class="s1">&#39;.status.conditions[]&#39;</span>
 </code></pre></div>
 <p>If all went well you should see an output like,</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -756,68 +689,48 @@ Copy the template to env file,</p>
 </code></pre></div>
 <p>Wait for the certificate to be updated in the request, you can check the same via,</p>
 <p>CA Certificate can be retrieved by,</p>
-<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">DEX_SERVER_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.ca&#39;</span> <span class="p">|</span> step base64 -d &gt;<span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex-ca.crt
+<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">FRUITS_UI_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.ca&#39;</span> <span class="p">|</span> step base64 -d &gt;<span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui-ca.crt
 </code></pre></div>
 <p>TLS Certificate can be retrieved by,</p>
-<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">DEX_SERVER_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.certificate&#39;</span> <span class="p">|</span> step base64 -d &gt; <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex.crt
+<div class="highlight"><pre><span></span><code>kubectl get certificaterequests.cert-manager.io -n step-certificates-system <span class="si">${</span><span class="nv">FRUITS_UI_IP</span><span class="si">}</span>.nip.io -o json <span class="p">|</span> jq -r <span class="s1">&#39;.status.certificate&#39;</span> <span class="p">|</span> step base64 -d &gt; <span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui.crt
 </code></pre></div>
 <h2 id="verify-certificates">Verify Certificates<a class="headerlink" href="#verify-certificates" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="nv">$TUTORIAL_HOME</span>/bin/verifyCerts.sh <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex.crt <span class="nv">$DEX_SERVER_IP</span>.nip.io
+<div class="highlight"><pre><span></span><code><span class="nv">$TUTORIAL_HOME</span>/bin/verifyCerts.sh <span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui.crt <span class="nv">$FRUITS_UI_IP</span>.nip.io
 </code></pre></div>
 <p>With <code>Verification succeeded!</code>, we are now all set to encrypt our gateway traffic.</p>
-<h2 id="create-ssl-secret">Create <abbr title="Secure Sockets Layer">SSL</abbr> Secret<a class="headerlink" href="#create-ssl-secret" title="Permanent link">&para;</a></h2>
+<h2 id="create-ssl-secret">Create SSL Secret<a class="headerlink" href="#create-ssl-secret" title="Permanent link">&para;</a></h2>
 <p>To be able to encrypt the traffic via Gloo Gateway, we need to configure the TLS certicates. The TLS certficate is configured using Kubernetes Secret.</p>
 <p>Decrypt the private key that we used to create the Certificate Signing Request,</p>
-<div class="highlight"><pre><span></span><code>step certificate key <span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex-key --out<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex.key
+<div class="highlight"><pre><span></span><code>step certificate key <span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui-key --out<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui.key
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The command out put says its public key, but its actually decrypted private key</p>
 </div>
-<div class="highlight"><pre><span></span><code>kubectl create secret generic dex-tls -n dex <span class="se">\</span>
-  --from-file<span class="o">=</span>tls.crt<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex.crt <span class="se">\</span>
-  --from-file<span class="o">=</span>tls.key<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex.key <span class="se">\</span>
-  --from-file<span class="o">=</span>ca.crt<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/gloo-demos-dex-ca.crt
+<div class="highlight"><pre><span></span><code>kubectl create secret generic fruits-ui-tls -n ui <span class="se">\</span>
+  --from-file<span class="o">=</span>tls.crt<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui.crt <span class="se">\</span>
+  --from-file<span class="o">=</span>tls.key<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui.key <span class="se">\</span>
+  --from-file<span class="o">=</span>ca.crt<span class="o">=</span><span class="nv">$TUTORIAL_HOME</span>/certs/fruits-ui-ca.crt
 </code></pre></div>
-<h2 id="deploy-dex">Deploy Dex<a class="headerlink" href="#deploy-dex" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>kustomize build  <span class="nv">$TUTORIAL_HOME</span>/cluster/dex <span class="se">\</span>
-  <span class="p">|</span> envsubst <span class="p">|</span> kubectl apply -f - 
+<h3 id="created-trusted-ca-secret">Created Trusted CA Secret<a class="headerlink" href="#created-trusted-ca-secret" title="Permanent link">&para;</a></h3>
+<p>Lets also make sure the <code>trusted-ca</code> secret is available in the deployment namespace <code>ui</code>:</p>
+<div class="highlight"><pre><span></span><code>kubectl get secrets trusted-ca -n ui
 </code></pre></div>
-<p>Wait for the dex deployment to be up and running</p>
-<div class="highlight"><pre><span></span><code>kubectl rollout status -n dex deploy/dex --timeout<span class="o">=</span>60s
+<p>If you dont find the CA secret, create the same by,</p>
+<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/cluster/gloo/trusted-ca.yaml <span class="p">|</span> kubectl apply -n ui -f -
 </code></pre></div>
-<h2 id="create-gloo-oauth-secret">Create Gloo oAuth Secret<a class="headerlink" href="#create-gloo-oauth-secret" title="Permanent link">&para;</a></h2>
-<p>We have configured the <code>fruits-app</code> static client to identify itself with dex using a secret, the following snippet from dex config.yaml shows the base64 encoded <code>secret</code> that was configured,</p>
-<div class="highlight"><pre><span></span><code><span class="nt">staticClients</span><span class="p">:</span>
-<span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">fruits-app</span>
-  <span class="nt">redirectURIs</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="s">&#39;https://$GLOO_GATEWAY_PROXY_IP/callback&#39;</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="s">&#39;Fruits</span><span class="nv"> </span><span class="s">App&#39;</span>
-  <span class="c1"># value is fruits-app-secret</span>
-<span class="hll"><span class=" -Error"> </span><span class="nt">secret</span><span class="p">:</span> <span class="s">&quot;nJ1aXRzLWFwcC1zZWNyZXQ=&quot;</span>
-</span></code></pre></div>
-<p>The value of the <code>client-secret</code> is same as the <code>secret</code> value in the dex <code>config.yaml</code>.</p>
-<p>Let us create the Gloo oAuth secret to be used,</p>
-<div class="highlight"><pre><span></span><code>glooctl create secret oauth <span class="se">\</span>
-  --client-secret <span class="s1">&#39;fruits-app-secret&#39;</span> fruits-app-oauth
+<h2 id="scale-deployment-ui">Scale Deployment UI<a class="headerlink" href="#scale-deployment-ui" title="Permanent link">&para;</a></h2>
+<p>As we have already deployed the <code>fruits-app-ui</code>, its enough that we scale it,</p>
+<div class="highlight"><pre><span></span><code>kubectl -n ui scale --replicas<span class="o">=</span><span class="m">1</span> deploy/fruits-app-ui
 </code></pre></div>
-<h2 id="gloo-oauth-config">Gloo oAuth Config<a class="headerlink" href="#gloo-oauth-config" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/apps/microservice/fruits-api/gloo/auth-config.yaml <span class="se">\</span>
-  <span class="p">|</span> kubectl apply -f -
+<p>Wait for the UI application to be up and running,</p>
+<div class="highlight"><pre><span></span><code>kubectl rollout status -n ui deploy/fruits-app-ui --timeout<span class="o">=</span>60s
 </code></pre></div>
-<h2 id="update-virtual-service">Update Virtual Service<a class="headerlink" href="#update-virtual-service" title="Permanent link">&para;</a></h2>
-<p>Now let us update the virtual service to use the oAuth config,</p>
-<div class="highlight"><pre><span></span><code>envsubst &lt; <span class="nv">$TUTORIAL_HOME</span>/apps/microservice/fruits-api/gloo/virtual-service-oauth.yaml <span class="se">\</span>
-  <span class="p">|</span> kubectl apply -f -
+<h2 id="access-ui">Access UI<a class="headerlink" href="#access-ui" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">FRUITS_UI_URL</span><span class="o">=</span><span class="s2">&quot;https://</span><span class="si">${</span><span class="nv">FRUITS_UI_IP</span><span class="si">}</span><span class="s2">.nip.io&quot;</span>
+<span class="nb">echo</span> <span class="nv">$FRUITS_UI_URL</span>
 </code></pre></div>
-<h2 id="accessing-application">Accessing Application<a class="headerlink" href="#accessing-application" title="Permanent link">&para;</a></h2>
-<p>When you try to open the URL <code>$GLOO_PROXY_HTTPS_URL/api/fruits</code> in the web browser you will be thrown an login screen as shown:</p>
-<p><img alt="Dex Login" src="../images/dex_login_screen.png" /></p>
-<p>Enter the email address as <code>admin@example.com</code> with passsword as <code>password</code>.</p>
-<p>With successful login we will be asked permissions for <strong>Grants</strong>,</p>
-<p><img alt="Dex Grants" src="../images/dex_grant.png" /></p>
-<p>With us approving the grants we will be shown the list of fruits,</p>
-<p><img alt="Fruits JSON" src="../images/fruits_json.png" /></p>
+<p>Open the <code>$FRUITS_UI_URL</code> on your browser.</p>
                 
                   
                 
@@ -839,7 +752,7 @@ Copy the template to env file,</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../encrypt/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Encrypt Traffic" rel="prev">
+        <a href="../auth/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Authentication" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -848,20 +761,20 @@ Copy the template to env file,</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Encrypt Traffic
+              Authentication
             </div>
           </div>
         </a>
       
       
         
-        <a href="../ui/" class="md-footer__link md-footer__link--next" aria-label="Next: Application UI" rel="next">
+        <a href="../cors/" class="md-footer__link md-footer__link--next" aria-label="Next: CORS" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Application UI
+              CORS
             </div>
           </div>
           <div class="md-footer__button md-icon">
