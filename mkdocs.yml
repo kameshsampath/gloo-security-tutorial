@@ -16,15 +16,18 @@ nav:
   - 'Overview': "index.md"
   - 'Tools and Sources': "tools-and-sources.md"
   - 'Setup': "setup.md"
-  - "CA and Issuer": "step-certificates.md"
+  - "Public Key Infrastructure": "pki.md"
   - "Deploy Microservice": "deploy-app.md"
   - "Security with Gloo Edge":
       - "Create Gloo Resources": "gloo-resources.md"
       - "Encrypt Traffic": "encrypt.md"
       - "Authentication": "auth.md"
+      - "Application UI": "ui.md"
+      - "CORS": "cors.md"
       - "Rate Limit": "rate-limit.md"
       - "Web Application Firewall": "waf.md"
-      - "CORS": "cors.md"
+  - "Troubleshooting": "troubleshooting.md"
+
 markdown_extensions:
   - toc:
       baselevel: 1

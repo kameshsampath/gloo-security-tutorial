@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fruits-app-ui
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: fruits-app-ui
+  template:
+    metadata:
+      labels:
+        app: fruits-app-ui
+    spec:
+      volumes:
+        - name: certs
+          emptyDir: {}
+        - name: ca-certs
+          secret:
+            secretName: trusted-ca
+            items:
+              - key: tls.crt
+                path: ca.crt
+      containers:
+      - name: fruits-app-ui
+        image: ghcr.io/kameshsampath/fruits-app-ui
+        env:
+          - name: NODE_EXTRA_CA_CERTS
+            value: "/etc/ssl/certs/ca-certificates.crt"
+        volumeMounts:
+          - mountPath: /etc/ssl/certs/
+            name: certs
+      initContainers:
+        - name: add-ca-cert
+          image: ghcr.io/kameshsampath/fruits-app-ui
+          command:
+            - "sh"
+          args:
+            - "-c"
+            - "cp -r /etc/ssl/certs/* /certs; cat /etc/ssl/certs/ca-certificates.crt /ca-certs/ca.crt > /certs/ca-certificates.crt"
+          volumeMounts:
+            - mountPath: /certs
+              name: certs
+            - mountPath: /ca-certs
+              name: ca-certs

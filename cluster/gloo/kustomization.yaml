@@ -1,11 +1,13 @@
 resources:
 - all.yaml
-patches:
-- path: extauth-patch.yaml
-  target:
-    version: v1
-    group: apps    
-    kind: Deployment
-    name: extauth
-    namespace: gloo-system
-    labelSelector: gloo=extauth
+# patches:
+# - path: extauth-patch.yaml
+#   target:
+#     version: v1
+#     group: apps    
+#     kind: Deployment
+#     name: extauth
+#     namespace: gloo-system
+#     labelSelector: gloo=extauth
+patchesStrategicMerge:
+  - certs-vol-patch.yaml

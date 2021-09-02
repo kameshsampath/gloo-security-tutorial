@@ -1,0 +1,17 @@
+namespace: ui
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: ui-config
+    files:
+      - .env
+    behavior: replace
+
+resources:
+  - "github.com/kameshsampath/fruits-app-ui/config"
+
+patchesStrategicMerge:
+  - certs-vol-patch.yaml
+  - service-lb-patch.yaml

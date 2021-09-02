@@ -88,7 +88,7 @@ If all goes well you should have the `gloo-demos-dex.csr` and `gloo-demos-dex-ke
 
 Having created the CSR we are good to create the  cert-manager's `CertificateRequest`,
 
-As first step let us base64 encode the `gloo-demos` CSR,
+As first step let us base64 encode the `gloo-demos-dex` CSR,
 
 ```shell
 export GLOO_DEMOS_DEX_CSR=$(cat $TUTORIAL_HOME/certs/gloo-demos-dex.csr | step base64 | tr -d '\n' )
@@ -97,7 +97,7 @@ export GLOO_DEMOS_DEX_CSR=$(cat $TUTORIAL_HOME/certs/gloo-demos-dex.csr | step b
 Create the `CertificateRequest`,
 
 ```shell
-envsubst< $TUTORIAL_HOME/cluster/dex/certificate-request.yaml | kubectl apply -f - 
+envsubst< $TUTORIAL_HOME/cluster/dex/certificate-request.yaml | kubectl create -f - 
 ```
 
 Check the status of the `CertificateRequest`,
@@ -142,12 +142,7 @@ kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${DE
 ## Verify Certificates
 
 ```shell
-if step certificate verify $TUTORIAL_HOME/certs/gloo-demos-dex.crt --roots $TUTORIAL_HOME/certs/root_ca.crt --host=$DEX_SERVER_IP.nip.io ;
-then
-  echo 'Verification succeeded!'
-else
- echo 'Verification failed!'
-fi
+$TUTORIAL_HOME/bin/verifyCerts.sh $TUTORIAL_HOME/certs/gloo-demos-dex.crt $DEX_SERVER_IP.nip.io
 ```
 
 With `Verification succeeded!`, we are now all set to encrypt our gateway traffic.

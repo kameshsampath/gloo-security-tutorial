@@ -1,11 +1,11 @@
 apiVersion: cert-manager.io/v1
 kind: CertificateRequest
 metadata:
-  name: ${GLOO_GATEWAY_PROXY_IP}.nip.io
+  name: ${FRUITS_UI_IP}.nip.io
   namespace: step-certificates-system
 spec:
   # The base64 encoded version of the certificate request in PEM format.
-  request: ${GLOO_DEMOS_CSR}
+  request: ${FRUITS_UI_CSR}
   # The duration of the certificate
   duration: 720h
   # A reference to the issuer in charge of signing the CSR.

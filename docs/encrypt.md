@@ -23,7 +23,7 @@ echo "\nStepCA Password: ${STEP_CA_PASSWORD} \n"
 
 ## Certifcate Request
 
-As part of earlier [chapter](./step-certificates.md), we have step our CA and `StepIssuer` that helps us to create `cert-manager` CertificateRequests to generate the certificates.
+As part of earlier [chapter](./pki.md), we have step our CA and `StepIssuer` that helps us to create `cert-manager` CertificateRequests to generate the certificates.
 
 As first step of that we need to create a CSR, we can use step cli to create the CSR.
 
@@ -63,7 +63,7 @@ export GLOO_DEMOS_CSR=$(cat $TUTORIAL_HOME/certs/gloo-demos.csr | step base64 | 
 Create the `CertificateRequest`,
 
 ```shell
-envsubst< $TUTORIAL_HOME/cluster/ssl/certificate-request.yaml | kubectl apply -f - 
+envsubst< $TUTORIAL_HOME/cluster/ssl/certificate-request.yaml | kubectl create -f - 
 ```
 
 Check the status of the `CertificateRequest`,
@@ -108,12 +108,7 @@ kubectl get certificaterequests.cert-manager.io -n step-certificates-system ${GL
 ## Verify Certificates
 
 ```shell
-if step certificate verify $TUTORIAL_HOME/certs/gloo-demos.crt --roots $TUTORIAL_HOME/certs/root_ca.crt --host=$GLOO_GATEWAY_PROXY_IP.nip.io ;
-then
-  echo 'Verification succeeded!'
-else
- echo 'Verification failed!'
-fi
+$TUTORIAL_HOME/bin/verifyCerts.sh $TUTORIAL_HOME/certs/gloo-demos.crt $GLOO_GATEWAY_PROXY_IP.nip.io
 ```
 
 With `Verification succeeded!`, we are now all set to encrypt our gateway traffic.

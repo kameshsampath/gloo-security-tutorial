@@ -1,5 +1,5 @@
 ---
-title: CA and Issuer
+title: Public Key Infrastructure
 summary: Setup Private Certificate Authority.
 authors:
   - Kamesh Sampath
@@ -85,6 +85,35 @@ helm install step-certificates smallstep/step-certificates \
   -n step-certificates-system \
   -f $TUTORIAL_HOME/cluster/step-ca/values.yaml \
   --wait
+```
+
+## Configure Step CA
+
+By default the `step-ca` issues TLS certicates that are valid only for **24 hours**. For the tutorial purpose we will reconfigure it to be **720 hours(30 days)**. For more information on the step configuration check the [documentation](https://smallstep.com/docs/step-ca/configuration).
+
+```bash
+CA_JSON=$(kubectl get cm -n step-certificates-system step-certificates-config -o json | jq -r '.data["ca.json"]' |  jq -c '.authority.claims += { "maxTLSCertDuration": "720h" }' | jq -Rs .)
+```
+
+Update the `step-certificates-config`,
+
+```bash
+kubectl patch configmap/step-certificates-config \
+  -n step-certificates-system  \
+  --type merge \
+  -p "{\"data\":{\"ca.json\": $CA_JSON }}"
+```
+
+Lets restart the statefulset to make sure the updated configuration takes effect,
+
+```bash
+kubectl rollout restart  -n step-certificates-system statefulset/step-certificates 
+```
+
+Wait for the stateful set `step-certificates` to be up
+
+```bash
+kubectl rollout status -n step-certificates-system statefulset/step-certificates --timeout=60s
 ```
 
 ## Install Step Issuer

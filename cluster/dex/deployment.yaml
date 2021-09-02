@@ -15,7 +15,7 @@ spec:
       labels:
         app: dex
     spec:
-      serviceAccountName: dex # This is created below
+      serviceAccountName: dex
       initContainers:
         - name: add-ca-cert
           image: ghcr.io/dexidp/dex:v2.30.0

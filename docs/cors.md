@@ -6,8 +6,6 @@ authors:
 date: 2021-08-19
 ---
 
-# Gloo Edge::CORS
-
 At the end of this chapter you would have known how to:
 
 - [x] Configure CORS

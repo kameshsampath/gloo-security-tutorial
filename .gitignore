@@ -39,4 +39,5 @@ cluster/gloo/all.yaml
 **/*.csr
 cluster/step-ca/old
 cluster/step-ca/values.yaml
+cluster/step-ca/step-ca-config-patch.json
 !includes/response.json

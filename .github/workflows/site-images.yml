@@ -28,7 +28,7 @@ jobs:
           image: kameshsampath/gloo-security-tutorial-site
           tags: latest ${{ github.sha }}
           dockerfiles: |
-            ./Dockerfile
+            ./Dockerfile-Site
 
       - name: Push To ghcr.io
         id: push-to-registry
